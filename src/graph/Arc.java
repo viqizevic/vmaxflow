@@ -5,7 +5,7 @@ import util.Log;
 /**
  * The Class Arc.
  */
-public abstract class Arc {
+public class Arc {
 	
 	/** The default id. */
 	protected static final int DEFAULT_ARC_ID = -1;
@@ -37,8 +37,8 @@ public abstract class Arc {
 		this.name_ = name;
 		this.startVertex_ = startVertex;
 		this.endVertex_ = endVertex;
-		startVertex.addConnectingArc(this);
-		endVertex.addConnectingArc(this);
+		startVertex.addOutgoingArc(this);
+		endVertex.addIngoingArc(this);
 	}
 
 	/**
@@ -113,23 +113,21 @@ public abstract class Arc {
 	/**
 	 * Checks if is connecting.
 	 *
-	 * @param u the u
-	 * @param v the v
+	 * @param startVertex the start vertex
+	 * @param endVertex the end vertex
 	 * @return true, if is connecting
 	 */
-	public boolean isConnecting(Vertex u, Vertex v) {
-		boolean b1 = startVertex_.equals(u) && endVertex_.equals(v);
-		boolean b2 = startVertex_.equals(v) && endVertex_.equals(u);
-		return b1 || b2;
+	public boolean isConnecting(Vertex startVertex, Vertex endVertex) {
+		return startVertex_.equals(startVertex) && endVertex_.equals(endVertex);
 	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		String s = "ArcID:" + id_ + " - name:" + name_;
+		String s = "Arc - id:" + id_ + " - name:" + name_;
 		if (startVertex_ != null && endVertex_ != null) {
-			s += " - from: " + startVertex_.getName() + " - to:" + endVertex_.getName();
+			s += " - from:" + startVertex_.getName() + " - to:" + endVertex_.getName();
 		}
 		return s;
 	}

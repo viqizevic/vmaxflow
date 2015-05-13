@@ -20,9 +20,12 @@ public class Vertex {
 	/** The name. */
 	private String name_;
 	
-	/** The arcs connecting to this vertex. */
-	private HashMap<String, Arc> arcs_;
+	/** The ingoing arcs_. */
+	private HashMap<String, Arc> ingoingArcs_;
 
+	/** The outgoing arcs_. */
+	private HashMap<String, Arc> outgoingArcs_;
+	
 	/**
 	 * Instantiates a new vertex.
 	 *
@@ -31,7 +34,8 @@ public class Vertex {
 	public Vertex(String name) {
 		id_ = DEFAULT_VERTEX_ID;
 		this.name_ = name;
-		arcs_ = new HashMap<String, Arc>();
+		ingoingArcs_ = new HashMap<String, Arc>();
+		outgoingArcs_ = new HashMap<String, Arc>();
 	}
 	
 	/**
@@ -68,24 +72,45 @@ public class Vertex {
 	}
 
 	/**
-	 * Adds the connecting arc.
+	 * Adds the ingoing arc.
 	 *
 	 * @param arc the arc
 	 */
-	public void addConnectingArc(Arc arc) {
+	public void addIngoingArc(Arc arc) {
 		if (arc == null) {
 			return;
 		}
-		arcs_.put(arc.getName(), arc);
+		ingoingArcs_.put(arc.getName(), arc);
 	}
 	
 	/**
-	 * Gets the arcs.
+	 * Adds the outgoing arc.
+	 *
+	 * @param arc the arc
+	 */
+	public void addOutgoingArc(Arc arc) {
+		if (arc == null) {
+			return;
+		}
+		outgoingArcs_.put(arc.getName(), arc);
+	}
+	
+	/**
+	 * Gets the ingoing arcs.
 	 *
 	 * @return the arcs
 	 */
-	public Collection<Arc> getArcs() {
-		return arcs_.values();
+	public Collection<Arc> getIngoingArcs() {
+		return ingoingArcs_.values();
+	}
+	
+	/**
+	 * Gets the outgoing arcs.
+	 *
+	 * @return the outgoing arcs
+	 */
+	public Collection<Arc> getOutgoingArcs() {
+		return outgoingArcs_.values();
 	}
 	
 	/**
@@ -95,7 +120,7 @@ public class Vertex {
 	 * @return the arc
 	 */
 	public Arc removeArc(String name) {
-		return arcs_.remove(name);
+		return ingoingArcs_.remove(name);
 	}
 	
 	/**
@@ -105,7 +130,7 @@ public class Vertex {
 	 */
 	public Collection<Arc> removeArcs() {
 		Vector<Arc> removed = new Vector<Arc>();
-		for (Arc t : arcs_.values()) {
+		for (Arc t : ingoingArcs_.values()) {
 			removed.add(t);
 		}
 		for (Arc t : removed) {
@@ -121,7 +146,7 @@ public class Vertex {
 	 */
 	public Collection<Vertex> getNeighbors() {
 		Vector<Vertex> v = new Vector<Vertex>();
-		for (Arc t : arcs_.values()) {
+		for (Arc t : ingoingArcs_.values()) {
 			v.add(getConnectedVertex(t));
 		}
 		return v;
@@ -160,7 +185,7 @@ public class Vertex {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		String s = "VertexID:" + id_ + " - name:" + name_;
+		String s = "Vertex - id:" + id_ + " - name:" + name_;
 		return s;
 	}
 	

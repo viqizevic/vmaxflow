@@ -84,11 +84,9 @@ public class Network {
 		if (nrLoc + nrTr > 25) {
 			return s;
 		}
-		if (nrLoc > 0) s +=  "\nVertices list:\n";
 		for (String n : vertices_.keySet()) {
 			s += vertices_.get(n).toString() + "\n";
 		}
-		if (nrTr > 0) s +=  "Arcs list:\n";
 		for (Arc t : arcs_.values()) {
 			s += t.toString() + "\n";
 		}
@@ -208,7 +206,7 @@ public class Network {
 			Log.p("Try to remove a non-existent vertex: " + name);
 		}
 		Vertex loc = vertices_.get(name);
-		if (!loc.getArcs().isEmpty()) {
+		if (!loc.getIngoingArcs().isEmpty()) {
 			Log.p("Try to remove a vertex which still connected to a arc: " + name);
 		}
 		vertexNames_.remove(loc.getId());
@@ -229,6 +227,30 @@ public class Network {
 		return vertexNames_.get(id);
 	}
 	
+	/**
+	 * Adds the arc.
+	 *
+	 * @param start the start
+	 * @param end the end
+	 * @return true, if successful
+	 */
+	public boolean addArc(Vertex start, Vertex end) {
+		return addArc(new Arc(start.getName()+"to"+end.getName(), start, end));
+	}
+	
+	/**
+	 * Adds the double arcs.
+	 *
+	 * @param u the u
+	 * @param v the v
+	 * @return true, if successful
+	 */
+	public boolean addDoubleArcs(Vertex u, Vertex v) {
+		boolean b = true;
+		b = b && addArc(u, v);
+		b = b && addArc(v, u);
+		return b;
+	}
 	
 	/**
 	 * Adds the arc.
@@ -236,7 +258,7 @@ public class Network {
 	 * @param arc the arc
 	 * @return true, if successful
 	 */
-	public boolean addArc(Arc arc) {
+	private boolean addArc(Arc arc) {
 		if (arc == null) {
 			Log.e("Unable to add a null arc!");
 			return false;
@@ -320,7 +342,7 @@ public class Network {
 	 */
 	public Arc getConnectingArc(Vertex u, Vertex v) {
 		if (u.isConnectedTo(v)) {
-			for (Arc t : u.getArcs()) {
+			for (Arc t : u.getIngoingArcs()) {
 				if (t.isConnecting(u, v)) {
 					return t;
 				}
@@ -393,11 +415,11 @@ public class Network {
 				Log.w("Name is not used as the key for the vertices hash map: " + loc.getName());
 				res = false;
 			}
-			if (loc.getArcs().isEmpty()) {
+			if (loc.getIngoingArcs().isEmpty()) {
 				Log.w("Found a vertex without arc: " + loc.getName());
 				res = false;
 			}
-			for (Arc t : loc.getArcs()) {
+			for (Arc t : loc.getIngoingArcs()) {
 				if (!arcExists(t.getName())) {
 					Log.w("A arc connected to a vertex is not in hash map: " + t.getName());
 					res = false;

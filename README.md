@@ -1,2 +1,4 @@
 # vmaxflow
-Maximum Flow Implementation
+
+Implementation of the Push-Relabel Method 
+for the Maximum Flow Problem
