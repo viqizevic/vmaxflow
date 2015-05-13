@@ -8,7 +8,7 @@ import util.Log;
 public abstract class Arc {
 	
 	/** The default id. */
-	private final int defaultId_ = -1;
+	protected static final int DEFAULT_ARC_ID = -1;
 	
 	/** The id. */
 	private int id_;
@@ -22,8 +22,8 @@ public abstract class Arc {
 	/** The end vertex. */
 	private Vertex endVertex_;
 	
-	/** The establishment cost. */
-	private double establishmentCost_;
+	/** The capacity. */
+	private double capacity_;
 	
 	/**
 	 * Instantiates a new arc.
@@ -33,10 +33,10 @@ public abstract class Arc {
 	 * @param endVertex the end vertex
 	 */
 	public Arc(String name, Vertex startVertex, Vertex endVertex) {
-		id_ = defaultId_;
+		id_ = DEFAULT_ARC_ID;
 		this.name_ = name;
-		setStartVertex(startVertex);
-		setEndVertex(endVertex);
+		this.startVertex_ = startVertex;
+		this.endVertex_ = endVertex;
 		startVertex.addConnectingArc(this);
 		endVertex.addConnectingArc(this);
 	}
@@ -66,7 +66,7 @@ public abstract class Arc {
 	 * @return true, if successful
 	 */
 	public boolean setId(int newId) {
-		if (defaultId_ != id_) {
+		if (DEFAULT_ARC_ID != id_) {
 			Log.e("ID changed already. Cannot change anymore. ID=" + id_);
 			return false;
 		}
@@ -84,15 +84,6 @@ public abstract class Arc {
 	}
 
 	/**
-	 * Sets the start vertex.
-	 *
-	 * @param startVertex the new start vertex
-	 */
-	public void setStartVertex(Vertex startVertex) {
-		this.startVertex_ = startVertex;
-	}
-
-	/**
 	 * Gets the end vertex.
 	 *
 	 * @return the end vertex
@@ -102,21 +93,21 @@ public abstract class Arc {
 	}
 
 	/**
-	 * Sets the end vertex.
+	 * Gets the capacity.
 	 *
-	 * @param endVertex the new end vertex
+	 * @return the capacity
 	 */
-	public void setEndVertex(Vertex endVertex) {
-		this.endVertex_ = endVertex;
+	public double getCapacity() {
+		return capacity_;
 	}
 
 	/**
-	 * Gets the establishment cost.
+	 * Sets the capacity.
 	 *
-	 * @return the establishment cost
+	 * @param capacity the new capacity
 	 */
-	public double getEstablishmentCost() {
-		return establishmentCost_;
+	public void setCapacity(double capacity) {
+		this.capacity_ = capacity;
 	}
 
 	/**

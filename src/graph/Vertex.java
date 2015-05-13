@@ -12,7 +12,7 @@ import util.Log;
 public class Vertex {
 	
 	/** The default id. */
-	private final int defaultId_ = -1;
+	protected static final int DEFAULT_VERTEX_ID = -1;
 	
 	/** The id. */
 	private int id_;
@@ -22,7 +22,6 @@ public class Vertex {
 	
 	/** The arcs connecting to this vertex. */
 	private HashMap<String, Arc> arcs_;
-	
 
 	/**
 	 * Instantiates a new vertex.
@@ -30,7 +29,7 @@ public class Vertex {
 	 * @param name the name
 	 */
 	public Vertex(String name) {
-		id_ = defaultId_;
+		id_ = DEFAULT_VERTEX_ID;
 		this.name_ = name;
 		arcs_ = new HashMap<String, Arc>();
 	}
@@ -60,7 +59,7 @@ public class Vertex {
 	 * @return true, if successful
 	 */
 	public boolean setId(int newId) {
-		if (defaultId_ != id_) {
+		if (DEFAULT_VERTEX_ID != id_) {
 			Log.e("ID changed already. Cannot change anymore. ID=" + id_);
 			return false;
 		}
