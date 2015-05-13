@@ -129,6 +129,7 @@ public class Arc {
 		if (startVertex_ != null && endVertex_ != null) {
 			s += " - from:" + startVertex_.getName() + " - to:" + endVertex_.getName();
 		}
+		s += " - cap:" + capacity_;
 		return s;
 	}
 }

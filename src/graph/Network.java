@@ -79,8 +79,8 @@ public class Network {
 		int nrLoc = vertices_.size();
 		int nrTr = arcs_.size();
 		String s = "Network " + name_ + "\n";
-		s += Util.nText("%d vertex", "%d vertices", nrLoc) + " found.\n";
-		s += Util.nText("%d arc", nrTr) + " found.\n";
+		s += Util.nText("%d vertex", "%d vertices", nrLoc) + "\n";
+		s += Util.nText("%d arc", nrTr) + "\n";
 		if (nrLoc + nrTr > 25) {
 			return s;
 		}
@@ -232,10 +232,13 @@ public class Network {
 	 *
 	 * @param start the start
 	 * @param end the end
+	 * @param capacity the capacity
 	 * @return true, if successful
 	 */
-	public boolean addArc(Vertex start, Vertex end) {
-		return addArc(new Arc(start.getName()+"to"+end.getName(), start, end));
+	public boolean addArc(Vertex start, Vertex end, double capacity) {
+		Arc a = new Arc(start.getName()+"to"+end.getName(), start, end);
+		a.setCapacity(capacity);
+		return addArc(a);
 	}
 	
 	/**
@@ -245,10 +248,10 @@ public class Network {
 	 * @param v the v
 	 * @return true, if successful
 	 */
-	public boolean addDoubleArcs(Vertex u, Vertex v) {
+	public boolean addDoubleArcs(Vertex u, Vertex v, double capacity) {
 		boolean b = true;
-		b = b && addArc(u, v);
-		b = b && addArc(v, u);
+		b = b && addArc(u, v, capacity);
+		b = b && addArc(v, u, capacity);
 		return b;
 	}
 	
@@ -258,7 +261,7 @@ public class Network {
 	 * @param arc the arc
 	 * @return true, if successful
 	 */
-	private boolean addArc(Arc arc) {
+	public boolean addArc(Arc arc) {
 		if (arc == null) {
 			Log.e("Unable to add a null arc!");
 			return false;
@@ -275,13 +278,18 @@ public class Network {
 			Log.w("Cannot add arc " + arc.getName() + ", since one of the nodes is not in network!");
 			return false;
 		}
+		int arcId = arcIdCounter_;
+		if (Arc.DEFAULT_ARC_ID == arc.getId()) {
+			arc.setId(arcIdCounter_);
+			arcIdCounter_++;
+		} else {
+			arcId = arc.getId();
+		}
 		arcs_.put(arc.getName(), arc);
-		arc.setId(arcIdCounter_);
-		if (arcNames_.containsKey(arc.getId())) {
+		if (arcNames_.containsKey(arcId)) {
 			Log.w("Override existing arc with the same id!");
 		}
 		arcNames_.put(arc.getId(), arc.getName());
-		arcIdCounter_++;
 		return true;
 	}
 

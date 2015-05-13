@@ -7,8 +7,13 @@ import graph.Vertex;
 public class Main {
 	
 	public static void main(String[] args) {
-		Network g = createTestNetwork(5);
+		
+		int n = 5;
+		Network g = createTestNetwork(n);
 		Log.p(g.toString());
+		
+		MaxFlow.computeFlow(g, g.getVertex(1+""), g.getVertex(n+""));
+		
 	}
 	
 	public static Network createTestNetwork(int n) {
@@ -16,7 +21,7 @@ public class Main {
 		for (int i=1; i <= n; i++) {
 			g.addVertex(new Vertex(i+""));
 			if (i > 1) {
-				g.addDoubleArcs(g.getVertex((i-1)+""), g.getVertex(i+""));
+				g.addDoubleArcs(g.getVertex((i-1)+""), g.getVertex(i+""), 1);
 			}
 		}
 		return g;
