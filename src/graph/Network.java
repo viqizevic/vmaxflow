@@ -355,6 +355,11 @@ public class Network {
 					return t;
 				}
 			}
+			for (Arc t : u.getOutgoingArcs()) {
+				if (t.isConnecting(u, v)) {
+					return t;
+				}
+			}
 		}
 		return null;
 	}

@@ -149,6 +149,9 @@ public class Vertex {
 		for (Arc t : ingoingArcs_.values()) {
 			v.add(getConnectedVertex(t));
 		}
+		for (Arc t : outgoingArcs_.values()) {
+			v.add(getConnectedVertex(t));
+		}
 		return v;
 	}
 	
@@ -173,7 +176,17 @@ public class Vertex {
 		if (other.equals(this)) {
 			other = connectingArc.getEndVertex();
 		}
-		if (!connectingArc.isConnecting(this, other)) {
+		boolean error = false;
+		if (this.equals(connectingArc.getStartVertex())) {
+			if (!connectingArc.isConnecting(this, other)) {
+				error = true;
+			}
+		} else {
+			if (!connectingArc.isConnecting(other, this)) {
+				error = true;
+			}
+		}
+		if (error) {
 			Log.e("The arc given is not connected to this vertex,"
 					+ " cannot retrieve other connected vertex over this arc");
 			return null;
