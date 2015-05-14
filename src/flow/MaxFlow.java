@@ -4,6 +4,7 @@ import graph.Arc;
 import graph.Network;
 import graph.Vertex;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import util.Log;
@@ -43,13 +44,44 @@ public class MaxFlow {
 			excess_.put(v, 0.0);
 			heights_.put(v, 0); // TODO: set h(v) to be the smaller of n and the distance from v to t
 		}
-		heights_.put(source_, network_.getNumberOfVertices());
+		heights_.put(source_, 1);
 		// Excess of s is set to a number that exceeds the potential flow value
 		// e.g., sum of capacities of all outgoing arcs of s plus one
 		for (Arc sv : source_.getOutgoingArcs()) {
 			excess_.put(source_, excess_.get(source_) + sv.getCapacity());
 		}
 		excess_.put(source_, excess_.get(source_) + 1);
+		for (Arc sv : source_.getOutgoingArcs()) {
+			push(sv);
+		}
+		heights_.put(source_, network_.getNumberOfVertices());
+	}
+	
+	/**
+	 * Discharge.
+	 *
+	 * @param v the v
+	 */
+	private static void discharge(Vertex v) {
+		if (!vertexIsActive(v)) {
+			Log.e("Non-active " + v + ". Unable to discharge!");
+			return;
+		}
+		Collection<Arc> list = v.getOutgoingArcs();
+		Arc vw = list.iterator().next();
+		do {
+			if (arcIsAdmissible(vw)) {
+				push(vw);
+			} else {
+				list.remove(vw);
+				if (!list.isEmpty()) {
+					vw = list.iterator().next();
+				}
+			}
+		} while (0.0 != excess_.get(v) && !list.isEmpty());
+		if (list.isEmpty()) {
+			relabel(v);
+		}
 	}
 	
 	/**
@@ -85,6 +117,8 @@ public class MaxFlow {
 		double delta = Math.min(excess_.get(u), residualCapacity);
 		preflow_.put(uv, fuv + delta);
 		preflow_.put(vu, preflow_.get(vu) - delta);
+		excess_.put(u, excess_.get(u) - delta);
+		excess_.put(v, excess_.get(v) + delta);
 	}
 	
 	/**
@@ -134,9 +168,9 @@ public class MaxFlow {
 	 * @return true, if successful
 	 */
 	private static boolean vertexIsActive(Vertex v) {
-		if (v.equals(source_) || v.equals(sink_)) {
-			return false;
-		}
+//		if (v.equals(source_) || v.equals(sink_)) {
+//			return false;
+//		} // TODO: check if we really need this
 		if (heights_.get(v) >= network_.getNumberOfVertices()) {
 			return false;
 		}
@@ -159,7 +193,8 @@ public class MaxFlow {
 	private static void printNetwork() {
 		Log.p(network_.getName());
 		for (Vertex v : network_.getAllVertices()) {
-			Log.ps("vertex %s: h=%d - e=%.1f", v.getName(), heights_.get(v), excess_.get(v));
+			String active = vertexIsActive(v) ? "active" : "passive";
+			Log.ps("vertex %s: h=%d - e=%.1f - %s", v.getName(), heights_.get(v), excess_.get(v), active);
 		}
 		for (Arc a : network_.getAllArcs()) {
 			Log.ps("arc %s: f=%.1f - c=%.1f", a.getName(), preflow_.get(a), a.getCapacity());
