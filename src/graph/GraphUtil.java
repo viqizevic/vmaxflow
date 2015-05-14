@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import util.Log;
 
-public class NetworkUtil {
+public class GraphUtil {
 	
 	/**
 	 * Total flow.

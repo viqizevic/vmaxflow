@@ -1,7 +1,7 @@
 package flow;
 
 import graph.Arc;
-import graph.Network;
+import graph.Graph;
 import graph.Vertex;
 
 import java.util.Collection;
@@ -11,7 +11,7 @@ import util.Log;
 
 public class MaxFlow {
 	
-	private static Network network_;
+	private static Graph graph_;
 	
 	private static Vertex source_;
 	
@@ -23,24 +23,28 @@ public class MaxFlow {
 	
 	private static HashMap<Vertex, Integer> heights_;
 	
-	public static void computeFlow(Network network, Vertex s, Vertex t) {
-		network_ = network;
+	public static void computeFlow(Graph graph, Vertex s, Vertex t) {
+		graph_ = graph;
 		source_ = s;
 		sink_ = t;
 		
 		initialize();
 		
-		printNetwork();
+		printGraph();
+		
+		discharge(graph.getVertex(2));
+		
+		printGraph();
 	}
 	
 	private static void initialize() {
 		preflow_ = new HashMap<Arc, Double>();
-		for (Arc a : network_.getAllArcs()) {
+		for (Arc a : graph_.getAllArcs()) {
 			preflow_.put(a, 0.0);
 		}
 		excess_ = new HashMap<Vertex, Double>();
 		heights_ = new HashMap<Vertex, Integer>();
-		for (Vertex v : network_.getAllVertices()) {
+		for (Vertex v : graph_.getAllVertices()) {
 			excess_.put(v, 0.0);
 			heights_.put(v, 0); // TODO: set h(v) to be the smaller of n and the distance from v to t
 		}
@@ -54,7 +58,6 @@ public class MaxFlow {
 		for (Arc sv : source_.getOutgoingArcs()) {
 			push(sv);
 		}
-		heights_.put(source_, network_.getNumberOfVertices());
 	}
 	
 	/**
@@ -71,14 +74,16 @@ public class MaxFlow {
 		Arc vw = list.iterator().next();
 		do {
 			if (arcIsAdmissible(vw)) {
+				Log.p("Push..");
 				push(vw);
 			} else {
+				Log.p("Change arc..");
 				list.remove(vw);
 				if (!list.isEmpty()) {
 					vw = list.iterator().next();
 				}
 			}
-		} while (0.0 != excess_.get(v) && !list.isEmpty());
+		} while (0.0001 <= excess_.get(v) && !list.isEmpty());
 		if (list.isEmpty()) {
 			relabel(v);
 		}
@@ -92,7 +97,7 @@ public class MaxFlow {
 	private static void push(Arc uv) {
 		Vertex u = uv.getStartVertex();
 		Vertex v = uv.getEndVertex();
-		Arc vu = network_.getConnectingArc(v, u);
+		Arc vu = graph_.getConnectingArc(v, u);
 		/*
 		The push operation applies on an admissible out-edge (u, v) of an active vertex u in Gf.
 		It moves min ( e(u), c_f(u,v) ) units of flow from u to v.
@@ -115,6 +120,7 @@ public class MaxFlow {
 		double fuv = preflow_.get(uv);
 		double residualCapacity = uv.getCapacity() - fuv;
 		double delta = Math.min(excess_.get(u), residualCapacity);
+		Log.p("delta " + delta);
 		preflow_.put(uv, fuv + delta);
 		preflow_.put(vu, preflow_.get(vu) - delta);
 		excess_.put(u, excess_.get(u) - delta);
@@ -157,7 +163,7 @@ public class MaxFlow {
 		if (minHeight < Integer.MAX_VALUE) {
 			heights_.put(u, minHeight + 1);
 		} else {
-			heights_.put(u, network_.getNumberOfVertices());
+			heights_.put(u, graph_.getNumberOfVertices());
 		}
 	}
 	
@@ -171,7 +177,7 @@ public class MaxFlow {
 //		if (v.equals(source_) || v.equals(sink_)) {
 //			return false;
 //		} // TODO: check if we really need this
-		if (heights_.get(v) >= network_.getNumberOfVertices()) {
+		if (heights_.get(v) >= graph_.getNumberOfVertices()) {
 			return false;
 		}
 		if (excess_.get(v) <= 0) {
@@ -190,13 +196,13 @@ public class MaxFlow {
 		return heights_.get(arc.getStartVertex()) == heights_.get(arc.getEndVertex()) + 1;
 	}
 	
-	private static void printNetwork() {
-		Log.p(network_.getName());
-		for (Vertex v : network_.getAllVertices()) {
+	private static void printGraph() {
+		Log.p(graph_.getName());
+		for (Vertex v : graph_.getAllVertices()) {
 			String active = vertexIsActive(v) ? "active" : "passive";
 			Log.ps("vertex %s: h=%d - e=%.1f - %s", v.getName(), heights_.get(v), excess_.get(v), active);
 		}
-		for (Arc a : network_.getAllArcs()) {
+		for (Arc a : graph_.getAllArcs()) {
 			Log.ps("arc %s: f=%.1f - c=%.1f", a.getName(), preflow_.get(a), a.getCapacity());
 		}
 	}

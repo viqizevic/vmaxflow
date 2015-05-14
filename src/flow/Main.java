@@ -1,7 +1,7 @@
 package flow;
 
 import util.Log;
-import graph.Network;
+import graph.Graph;
 import graph.Vertex;
 
 public class Main {
@@ -9,15 +9,15 @@ public class Main {
 	public static void main(String[] args) {
 		
 		int n = 5;
-		Network g = createTestNetwork(n);
+		Graph g = createTestGraph(n);
 		Log.p(g.toString());
 		
 		MaxFlow.computeFlow(g, g.getVertex(1+""), g.getVertex(n+""));
 		
 	}
 	
-	public static Network createTestNetwork(int n) {
-		Network g = new Network("Test");
+	public static Graph createTestGraph(int n) {
+		Graph g = new Graph("Test");
 		for (int i=1; i <= n; i++) {
 			g.addVertex(new Vertex(i+""));
 			if (i > 1) {

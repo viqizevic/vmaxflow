@@ -7,9 +7,9 @@ import util.Log;
 import util.Util;
 
 /**
- * The Class Network.
+ * The Class Graph.
  */
-public class Network {
+public class Graph {
 	
 	/** The name. */
 	private String name_;
@@ -33,11 +33,11 @@ public class Network {
 	private HashMap<Integer, String> arcNames_;
 	
 	/**
-	 * Instantiates a new network.
+	 * Instantiates a new graph.
 	 *
 	 * @param name the name
 	 */
-	public Network(String name) {
+	public Graph(String name) {
 		name_ = name;
 		vertexIdCounter_ = 1;
 		arcIdCounter_ = 1;
@@ -78,7 +78,7 @@ public class Network {
 	public String toString() {
 		int nrLoc = vertices_.size();
 		int nrTr = arcs_.size();
-		String s = "Network " + name_ + "\n";
+		String s = "Graph " + name_ + "\n";
 		s += Util.nText("%d vertex", "%d vertices", nrLoc) + "\n";
 		s += Util.nText("%d arc", nrTr) + "\n";
 		if (nrLoc + nrTr > 25) {
@@ -275,7 +275,7 @@ public class Network {
 			return false;
 		}
 		if (!vertexExists(arc.getStartVertex().getName()) || !vertexExists(arc.getEndVertex().getName())) {
-			Log.w("Cannot add arc " + arc.getName() + ", since one of the nodes is not in network!");
+			Log.w("Cannot add arc " + arc.getName() + ", since one of the nodes is not in graph!");
 			return false;
 		}
 		int arcId = arcIdCounter_;
@@ -403,18 +403,18 @@ public class Network {
 	}
 	
 	/**
-	 * Checks if network is empty.
+	 * Checks if graph is empty.
 	 *
-	 * @return true, if network is empty
+	 * @return true, if graph is empty
 	 */
 	public boolean isEmpty() {
 		 return vertices_.isEmpty();
 	}
 	
 	/**
-	 * Checks if network is consistent.
+	 * Checks if graph is consistent.
 	 *
-	 * @return true, if network is consistent
+	 * @return true, if graph is consistent
 	 */
 	public boolean checkConsistency() {
 		boolean res = true;
@@ -460,9 +460,9 @@ public class Network {
 			}
 		}
 		if (true == res) {
-			Log.p("Network " + this.name_ + " is consistent.");
+			Log.p("Graph " + this.name_ + " is consistent.");
 		} else {
-			Log.w("Network " + this.name_ + " is inconsistent");
+			Log.w("Graph " + this.name_ + " is inconsistent");
 		}
 		return res;
 	}
