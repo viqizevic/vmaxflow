@@ -236,7 +236,7 @@ public class Graph {
 	 * @return true, if successful
 	 */
 	public boolean addArc(Vertex start, Vertex end, double capacity) {
-		Arc a = new Arc(start.getName()+"to"+end.getName(), start, end);
+		Arc a = new Arc("("+start.getName()+","+end.getName()+")", start, end);
 		a.setCapacity(capacity);
 		return addArc(a);
 	}
