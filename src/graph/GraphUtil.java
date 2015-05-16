@@ -5,6 +5,9 @@ import java.util.HashMap;
 
 import util.Log;
 
+/**
+ * The Class GraphUtil.
+ */
 public class GraphUtil {
 	
 	/**
@@ -26,5 +29,5 @@ public class GraphUtil {
 		}
 		return sum;
 	}
-
+	
 }

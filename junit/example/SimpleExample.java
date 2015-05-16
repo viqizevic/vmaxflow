@@ -51,9 +51,9 @@ public class SimpleExample {
 		
 		// run algo
 		HashMap<Arc, Double> flow = PushRelabelAlgo.computeMaxFlow(g, s, t);
-		Log.turnOnPrintLog();
 		
 		// print graph and flow
+		Log.turnOnPrintLog();
 		Log.p(g.toString());
 		for (Arc arc : flow.keySet()) {
 			Log.ps("f[%s] = %.2f", arc.getName(), flow.get(arc));

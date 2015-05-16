@@ -1,7 +1,11 @@
 package flow;
 
+import java.util.HashMap;
+
 import util.Log;
+import graph.Arc;
 import graph.Graph;
+import graph.GraphReader;
 import graph.Vertex;
 
 /**
@@ -22,6 +26,16 @@ public class Main {
 			return;
 		}
 		
+		String fileName = args[0];
+		Graph g = GraphReader.readFile(fileName);
+		Vertex s = g.getVertex(GraphReader.getSourceName());
+		Vertex t = g.getVertex(GraphReader.getSinkName());
+		Log.p(g.toString());
+		
+		HashMap<Arc, Double> flow = PushRelabelAlgo.computeMaxFlow(g, s, t);
+		for (Arc arc : flow.keySet()) {
+			Log.ps("f[%s] = %.2f", arc.getName(), flow.get(arc));
+		}
 	}
 	
 }

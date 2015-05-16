@@ -1,9 +1,6 @@
 package util;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Vector;
 
 /**
  * The Class Util.
@@ -126,71 +123,6 @@ public class Util {
 			}
 		}
 		return false;
-	}
-	
-	/**
-	 * Using windows system.
-	 *
-	 * @return true, if successful
-	 */
-	public static boolean usingWindowsSystem() {
-		String osName = System.getProperty("os.name");
-		return osName.startsWith("Windows");
-	}
-	
-	/**
-	 * Adds the numbers at the end of each element.
-	 *
-	 * @param array the array
-	 * @return the string[]
-	 */
-	public static String[] addNumbers(String[] array) {
-		int n = array.length;
-		String[] s = new String[n];
-		for (int i=0; i<n; i++) {
-			int k = i+1;
-			s[i] = array[i] + String.format("[%d]", k);
-		}
-		return s;
-	}
-	
-	/**
-	 * Gets the power set.
-	 *
-	 * @param set the set
-	 * @return the power set
-	 */
-	public static Vector<HashSet<Integer>> getPowerSet(Collection<Integer> set) {
-		Vector<HashSet<Integer>> powerSet = new Vector<HashSet<Integer>>();
-		for (Integer element : set) {
-			HashSet<Integer> single = new HashSet<Integer>();
-			single.add(element);
-			Vector<HashSet<Integer>> prevs = new Vector<HashSet<Integer>>();
-			prevs.addAll(powerSet);
-			for (HashSet<Integer> prev : prevs) {
-				HashSet<Integer> newset = new HashSet<Integer>();
-				newset.addAll(prev);
-				newset.addAll(single);
-				powerSet.add(newset);
-			}
-			powerSet.add(single);
-		}
-		return powerSet;
-	}
-	
-	/**
-	 * Creates the constant array.
-	 *
-	 * @param size the size
-	 * @param constantValue the constant value
-	 * @return the double[]
-	 */
-	public static double[] createConstantArray(int size, double constantValue) {
-		double[] constantArray = new double[size];
-		for (int i=0; i < size; i++) {
-			constantArray[i] = constantValue;
-		}
-		return constantArray;
 	}
 	
 }
