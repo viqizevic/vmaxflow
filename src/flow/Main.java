@@ -21,7 +21,7 @@ public class Main {
 		for (int i=1; i <= n; i++) {
 			g.addVertex(new Vertex(i+""));
 			if (i > 1) {
-				g.addDoubleArcs(g.getVertex((i-1)+""), g.getVertex(i+""), 1);
+				g.addArc(g.getVertex((i-1)+""), g.getVertex(i+""), n+1-i);
 			}
 		}
 		return g;

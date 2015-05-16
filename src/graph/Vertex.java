@@ -113,14 +113,29 @@ public class Vertex {
 		return outgoingArcs_.values();
 	}
 	
+	public void removeArc(String name) {
+		removeIngoingArc(name);
+		removeOutgoingArc(name);
+	}
+	
 	/**
-	 * Removes the arc.
+	 * Removes the ingoing arc.
 	 *
 	 * @param name the name
 	 * @return the arc
 	 */
-	public Arc removeArc(String name) {
+	public Arc removeIngoingArc(String name) {
 		return ingoingArcs_.remove(name);
+	}
+	
+	/**
+	 * Removes the outgoing arc.
+	 *
+	 * @param name the name
+	 * @return the arc
+	 */
+	public Arc removeOutgoingArc(String name) {
+		return outgoingArcs_.remove(name);
 	}
 	
 	/**
@@ -130,9 +145,8 @@ public class Vertex {
 	 */
 	public Collection<Arc> removeArcs() {
 		Vector<Arc> removed = new Vector<Arc>();
-		for (Arc t : ingoingArcs_.values()) {
-			removed.add(t);
-		}
+		removed.addAll(getIngoingArcs());
+		removed.addAll(getOutgoingArcs());
 		for (Arc t : removed) {
 			removeArc(t.getName());
 		}

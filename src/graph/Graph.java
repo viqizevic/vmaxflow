@@ -278,6 +278,7 @@ public class Graph {
 			Log.w("Cannot add arc " + arc.getName() + ", since one of the nodes is not in graph!");
 			return false;
 		}
+		updateIdCounterIfNeeded();
 		int arcId = arcIdCounter_;
 		if (Arc.DEFAULT_ARC_ID == arc.getId()) {
 			arc.setId(arcIdCounter_);
@@ -287,10 +288,19 @@ public class Graph {
 		}
 		arcs_.put(arc.getName(), arc);
 		if (arcNames_.containsKey(arcId)) {
-			Log.w("Override existing arc with the same id!");
+			Log.w("Override existing arc with the same id! " + arcId);
 		}
 		arcNames_.put(arc.getId(), arc.getName());
 		return true;
+	}
+	
+	/**
+	 * Update id counter if needed.
+	 */
+	private void updateIdCounterIfNeeded() {
+		while (arcNames_.containsKey(arcIdCounter_)) {
+			arcIdCounter_++;
+		}
 	}
 
 	/**
@@ -377,8 +387,8 @@ public class Graph {
 		}
 		Arc r = arcs_.remove(name);
 		arcNames_.remove(r.getId());
-		r.getStartVertex().removeArc(name);
-		r.getEndVertex().removeArc(name);
+		r.getStartVertex().removeOutgoingArc(name);
+		r.getEndVertex().removeIngoingArc(name);
 		return r;
 	}
 	
@@ -388,8 +398,8 @@ public class Graph {
 	 * @param arcs the arcs
 	 */
 	public void removeArcs(Collection<Arc> arcs) {
-		for (Object l : arcs.toArray()) {
-			removeArc(((Arc) l).getName());
+		for (Arc a : arcs) {
+			removeArc(a.getName());
 		}
 	}
 	

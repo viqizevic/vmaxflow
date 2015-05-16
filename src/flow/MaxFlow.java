@@ -4,60 +4,95 @@ import graph.Arc;
 import graph.Graph;
 import graph.Vertex;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Vector;
 
 import util.Log;
 
 public class MaxFlow {
 	
-	private static Graph graph_;
+	private static final String RES_ = "Residual";
+	
+	private static Graph residualGraph_;
 	
 	private static Vertex source_;
 	
 	private static Vertex sink_;
 	
-	private static HashMap<Arc, Double> preflow_;
+	private static HashMap<String, Double> preflow_;
 	
 	private static HashMap<Vertex, Double> excess_;
 	
-	private static HashMap<Vertex, Integer> heights_;
+	private static HashMap<Vertex, Integer> distances_;
 	
-	public static void computeFlow(Graph graph, Vertex s, Vertex t) {
-		graph_ = graph;
-		source_ = s;
-		sink_ = t;
+	private static LinkedList<Vertex> activeVertices_;
+	
+	public static HashMap<Arc, Double> computeFlow(Graph graph, Vertex s, Vertex t) {
+
+		initialize(graph, s, t);
 		
-		initialize();
+		printResidualGraph();
 		
-		printGraph();
+		while(!activeVertices_.isEmpty()) {
+			Vertex v = activeVertices_.pop();
+			discharge(v);
+			if (vertexIsActive(v)) {
+				activeVertices_.add(v);
+			}
+			printResidualGraph();
+			Log.p("");
+		}
 		
-		discharge(graph.getVertex(2));
-		
-		printGraph();
+		HashMap<Arc, Double> flow = new HashMap<Arc, Double>();
+		for (String a : preflow_.keySet()) {
+			if (graph.arcExists(a)) {
+				flow.put(graph.getArc(a), preflow_.get(a));
+				Log.p("Flow " + a + " " + preflow_.get(a));
+			}
+		}
+		return flow;
 	}
 	
-	private static void initialize() {
-		preflow_ = new HashMap<Arc, Double>();
-		for (Arc a : graph_.getAllArcs()) {
-			preflow_.put(a, 0.0);
+	private static void initialize(Graph graph, Vertex s, Vertex t) {
+		residualGraph_ = new Graph(getResidualName(graph.getName()));
+		for (Vertex v : graph.getAllVertices()) {
+			Vertex u = new Vertex(v.getName());
+			u.setId(v.getId());
+			residualGraph_.addVertex(u);
+		}
+		source_ = residualGraph_.getVertex(s.getName());
+		sink_ = residualGraph_.getVertex(t.getName());
+		for (Arc a : graph.getAllArcs()) {
+			Vertex u = residualGraph_.getVertex(a.getStartVertex().getName());
+			Vertex v = residualGraph_.getVertex(a.getEndVertex().getName());
+			Arc uv = new Arc(a.getName(), u, v);
+			uv.setId(a.getId());
+			uv.setCapacity(a.getCapacity());
+			residualGraph_.addArc(uv);
+		}
+		// zero preflow
+		preflow_ = new HashMap<String, Double>();
+		for (Arc a : residualGraph_.getAllArcs()) {
+			preflow_.put(a.getName(), 0.0);
 		}
 		excess_ = new HashMap<Vertex, Double>();
-		heights_ = new HashMap<Vertex, Integer>();
-		for (Vertex v : graph_.getAllVertices()) {
+		distances_ = new HashMap<Vertex, Integer>();
+		for (Vertex v : residualGraph_.getAllVertices()) {
+			// zero excess
 			excess_.put(v, 0.0);
-			heights_.put(v, 0); // TODO: set h(v) to be the smaller of n and the distance from v to t
+			distances_.put(v, 1);
 		}
-		heights_.put(source_, 1);
+		distances_.put(source_, 2);
+		distances_.put(sink_, 0);
+		activeVertices_ = new LinkedList<Vertex>();
+		activeVertices_.add(source_);
 		// Excess of s is set to a number that exceeds the potential flow value
 		// e.g., sum of capacities of all outgoing arcs of s plus one
 		for (Arc sv : source_.getOutgoingArcs()) {
 			excess_.put(source_, excess_.get(source_) + sv.getCapacity());
 		}
 		excess_.put(source_, excess_.get(source_) + 1);
-		for (Arc sv : source_.getOutgoingArcs()) {
-			push(sv);
-		}
 	}
 	
 	/**
@@ -70,23 +105,27 @@ public class MaxFlow {
 			Log.e("Non-active " + v + ". Unable to discharge!");
 			return;
 		}
-		Collection<Arc> list = v.getOutgoingArcs();
-		Arc vw = list.iterator().next();
-		do {
-			if (arcIsAdmissible(vw)) {
-				Log.p("Push..");
-				push(vw);
-			} else {
-				Log.p("Change arc..");
-				list.remove(vw);
-				if (!list.isEmpty()) {
-					vw = list.iterator().next();
+		Log.p("Discharge " + v);
+		Vector<Arc> list = new Vector<Arc>();
+		list.addAll(v.getOutgoingArcs());
+		if (!list.isEmpty()) {
+			do {
+				Arc vw = list.remove(0);
+				if (arcIsAdmissible(vw)) {
+					push(vw);
 				}
-			}
-		} while (0.0001 <= excess_.get(v) && !list.isEmpty());
-		if (list.isEmpty()) {
+			} while (0.0001 <= excess_.get(v) && !list.isEmpty());
+		}
+		if (vertexIsActive(v)) {
 			relabel(v);
 		}
+	}
+	
+	private static String getResidualName(String name) {
+		if (name.startsWith(RES_)) {
+			return name.substring(RES_.length());
+		}
+		return RES_ + name;
 	}
 	
 	/**
@@ -97,7 +136,6 @@ public class MaxFlow {
 	private static void push(Arc uv) {
 		Vertex u = uv.getStartVertex();
 		Vertex v = uv.getEndVertex();
-		Arc vu = graph_.getConnectingArc(v, u);
 		/*
 		The push operation applies on an admissible out-edge (u, v) of an active vertex u in Gf.
 		It moves min ( e(u), c_f(u,v) ) units of flow from u to v.
@@ -117,14 +155,34 @@ public class MaxFlow {
 			Log.e("Arc is not admissible, " + uv + ". Unable to push!");
 			return;
 		}
-		double fuv = preflow_.get(uv);
-		double residualCapacity = uv.getCapacity() - fuv;
-		double delta = Math.min(excess_.get(u), residualCapacity);
-		Log.p("delta " + delta);
-		preflow_.put(uv, fuv + delta);
-		preflow_.put(vu, preflow_.get(vu) - delta);
+		double delta = Math.min(excess_.get(u), uv.getCapacity());
+		if (0.0 == delta) {
+			Log.w("Delta is zero: " + delta);
+		}
+		Log.ps("Push %.1f over %s", delta, uv.toString());
+		addToPreflow(uv, delta);
+		Arc vu = residualGraph_.getArc(getResidualName(uv.getName()));
+		if (null == vu) {
+			vu = new Arc(getResidualName(uv.getName()), v, u);
+			vu.setCapacity(preflow_.get(uv.getName()));
+			residualGraph_.addArc(vu);
+			preflow_.put(vu.getName(), delta);
+		} else {
+			addToPreflow(vu, -delta);
+		}
 		excess_.put(u, excess_.get(u) - delta);
 		excess_.put(v, excess_.get(v) + delta);
+		if (vertexIsActive(v)) {
+			activeVertices_.add(v);
+		}
+	}
+	
+	private static void addToPreflow(Arc uv, double delta) {
+		preflow_.put(uv.getName(), preflow_.get(uv.getName()) + delta);
+		uv.setCapacity(uv.getCapacity() - delta);
+		if (0.0 == uv.getCapacity()) {
+			residualGraph_.removeArc(uv.getName());
+		}
 	}
 	
 	/**
@@ -149,22 +207,24 @@ public class MaxFlow {
 		}
 		for (Arc uv : u.getOutgoingArcs()) {
 			if (arcIsAdmissible(uv)) {
-				Log.e("Found admissible ougoing arc " + uv + ". Unable to relabel!");
+				Log.e("Found admissible outgoing arc " + uv + ". Unable to relabel!");
 				return;
 			}
 		}
-		int minHeight = Integer.MAX_VALUE;
+		int minDistance = Integer.MAX_VALUE;
 		for (Arc uv : u.getOutgoingArcs()) {
-			if (preflow_.get(uv) < uv.getCapacity()) {
-				Vertex v = uv.getEndVertex();
-				minHeight = heights_.get(v);
+			Vertex v = uv.getEndVertex();
+			int dv = distances_.get(v);
+			if (minDistance > dv) {
+				minDistance = dv;
 			}
 		}
-		if (minHeight < Integer.MAX_VALUE) {
-			heights_.put(u, minHeight + 1);
+		if (minDistance < Integer.MAX_VALUE) {
+			distances_.put(u, minDistance + 1);
 		} else {
-			heights_.put(u, graph_.getNumberOfVertices());
+			distances_.put(u, residualGraph_.getNumberOfVertices());
 		}
+		Log.ps("Relabel node %s to level %d", u.getName(), distances_.get(u));
 	}
 	
 	/**
@@ -174,10 +234,11 @@ public class MaxFlow {
 	 * @return true, if successful
 	 */
 	private static boolean vertexIsActive(Vertex v) {
-//		if (v.equals(source_) || v.equals(sink_)) {
-//			return false;
-//		} // TODO: check if we really need this
-		if (heights_.get(v) >= graph_.getNumberOfVertices()) {
+		if (v.equals(sink_)) {
+			return false;
+		}
+		int dv = distances_.get(v);
+		if (dv >= residualGraph_.getNumberOfVertices() || 0 > dv) {
 			return false;
 		}
 		if (excess_.get(v) <= 0) {
@@ -193,17 +254,20 @@ public class MaxFlow {
 	 * @return true, if successful
 	 */
 	private static boolean arcIsAdmissible(Arc arc) {
-		return heights_.get(arc.getStartVertex()) == heights_.get(arc.getEndVertex()) + 1;
+		Vertex u = arc.getStartVertex();
+		Vertex v = arc.getEndVertex();
+		boolean correctDistance = (distances_.get(u) >= distances_.get(v) + 1);
+		return correctDistance;
 	}
 	
-	private static void printGraph() {
-		Log.p(graph_.getName());
-		for (Vertex v : graph_.getAllVertices()) {
+	private static void printResidualGraph() {
+		Log.p(residualGraph_.getName());
+		for (Vertex v : residualGraph_.getAllVertices()) {
 			String active = vertexIsActive(v) ? "active" : "passive";
-			Log.ps("vertex %s: h=%d - e=%.1f - %s", v.getName(), heights_.get(v), excess_.get(v), active);
+			Log.ps("vertex %s: d=%d - e=%.1f - %s", v.getName(), distances_.get(v), excess_.get(v), active);
 		}
-		for (Arc a : graph_.getAllArcs()) {
-			Log.ps("arc %s: f=%.1f - c=%.1f", a.getName(), preflow_.get(a), a.getCapacity());
+		for (Arc a : residualGraph_.getAllArcs()) {
+			Log.ps("arc %s: f=%.1f - rc=%.1f", a.getName(), preflow_.get(a.getName()), a.getCapacity());
 		}
 	}
 
