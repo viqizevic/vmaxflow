@@ -1,5 +1,6 @@
-package flow;
+package example;
 
+import flow.PushRelabelAlgo;
 import graph.Arc;
 import graph.Graph;
 import graph.Vertex;

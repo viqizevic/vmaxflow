@@ -15,7 +15,13 @@ public class Main {
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
-		SimpleExample.main(args);
+		
+		int n = args.length;
+		if (1 != n) {
+			Log.p("Usage: java -jar vmaxflow.jar <filename>");
+			return;
+		}
+		
 	}
 	
 }
