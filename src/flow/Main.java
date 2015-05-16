@@ -8,23 +8,6 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		int n = 5;
-		Graph g = createTestGraph(n);
-		Log.p(g.toString());
-		
-		MaxFlow.computeFlow(g, g.getVertex(1+""), g.getVertex(n+""));
-		
 	}
 	
-	public static Graph createTestGraph(int n) {
-		Graph g = new Graph("Test");
-		for (int i=1; i <= n; i++) {
-			g.addVertex(new Vertex(i+""));
-			if (i > 1) {
-				g.addArc(g.getVertex((i-1)+""), g.getVertex(i+""), n+1-i);
-			}
-		}
-		return g;
-	}
-
 }

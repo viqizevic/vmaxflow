@@ -20,6 +20,7 @@ public class GraphUtil {
 			Double f = flow.get(a);
 			if (null == f) {
 				Log.w("Null preflow.. " + a.toString());
+				continue;
 			}
 			sum += f;
 		}

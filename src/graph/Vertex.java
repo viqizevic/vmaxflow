@@ -113,6 +113,11 @@ public class Vertex {
 		return outgoingArcs_.values();
 	}
 	
+	/**
+	 * Removes the arc.
+	 *
+	 * @param name the name
+	 */
 	public void removeArc(String name) {
 		removeIngoingArc(name);
 		removeOutgoingArc(name);

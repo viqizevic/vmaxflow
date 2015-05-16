@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import util.Log;
 
-public class MaxFlow {
+public class PushRelabelAlgo {
 	
 	private static final String RES_ = "Residual";
 	
@@ -28,7 +28,7 @@ public class MaxFlow {
 	
 	private static LinkedList<Vertex> activeVertices_;
 	
-	public static HashMap<Arc, Double> computeFlow(Graph graph, Vertex s, Vertex t) {
+	public static HashMap<Arc, Double> computeMaxFlow(Graph graph, Vertex s, Vertex t) {
 
 		initialize(graph, s, t);
 		
@@ -76,23 +76,37 @@ public class MaxFlow {
 		for (Arc a : residualGraph_.getAllArcs()) {
 			preflow_.put(a.getName(), 0.0);
 		}
+		// initial excesses
 		excess_ = new HashMap<Vertex, Double>();
-		distances_ = new HashMap<Vertex, Integer>();
 		for (Vertex v : residualGraph_.getAllVertices()) {
 			// zero excess
 			excess_.put(v, 0.0);
-			distances_.put(v, 1);
 		}
-		distances_.put(source_, 2);
-		distances_.put(sink_, 0);
-		activeVertices_ = new LinkedList<Vertex>();
-		activeVertices_.add(source_);
 		// Excess of s is set to a number that exceeds the potential flow value
 		// e.g., sum of capacities of all outgoing arcs of s plus one
 		for (Arc sv : source_.getOutgoingArcs()) {
 			excess_.put(source_, excess_.get(source_) + sv.getCapacity());
 		}
 		excess_.put(source_, excess_.get(source_) + 1);
+		// set distances
+		setInitialDistances();
+		activeVertices_ = new LinkedList<Vertex>();
+		activeVertices_.add(source_);
+	}
+	
+	/**
+	 * Sets the initial distances.
+	 */
+	private static void setInitialDistances() {
+		distances_ = new HashMap<Vertex, Integer>();
+		for (Vertex v : residualGraph_.getAllVertices()) {
+			distances_.put(v, 1);
+		}
+		distances_.put(sink_, 0);
+		distances_.put(source_, 2);
+		if (2 == residualGraph_.getNumberOfVertices()) {
+			distances_.put(source_, 1); // since no other node exists with distance 1
+		}
 	}
 	
 	/**
@@ -105,7 +119,7 @@ public class MaxFlow {
 			Log.e("Non-active " + v + ". Unable to discharge!");
 			return;
 		}
-		Log.p("Discharge " + v);
+		Log.p("Discharge vertex " + v.getName());
 		Vector<Arc> list = new Vector<Arc>();
 		list.addAll(v.getOutgoingArcs());
 		if (!list.isEmpty()) {
@@ -121,6 +135,12 @@ public class MaxFlow {
 		}
 	}
 	
+	/**
+	 * Gets the residual name.
+	 *
+	 * @param name the name
+	 * @return the residual name
+	 */
 	private static String getResidualName(String name) {
 		if (name.startsWith(RES_)) {
 			return name.substring(RES_.length());
@@ -159,14 +179,18 @@ public class MaxFlow {
 		if (0.0 == delta) {
 			Log.w("Delta is zero: " + delta);
 		}
-		Log.ps("Push %.1f over %s", delta, uv.toString());
+		Log.ps("Push %.1f over arc %s", delta, uv.getName());
 		addToPreflow(uv, delta);
 		Arc vu = residualGraph_.getArc(getResidualName(uv.getName()));
 		if (null == vu) {
 			vu = new Arc(getResidualName(uv.getName()), v, u);
-			vu.setCapacity(preflow_.get(uv.getName()));
+			vu.setCapacity(delta);
 			residualGraph_.addArc(vu);
-			preflow_.put(vu.getName(), delta);
+			if (preflow_.containsKey(vu.getName())) {
+				preflow_.put(vu.getName(), preflow_.get(vu.getName()) - delta);
+			} else {
+				preflow_.put(vu.getName(), -delta);
+			}
 		} else {
 			addToPreflow(vu, -delta);
 		}
@@ -177,6 +201,12 @@ public class MaxFlow {
 		}
 	}
 	
+	/**
+	 * Adds to preflow.
+	 *
+	 * @param uv the uv
+	 * @param delta the delta
+	 */
 	private static void addToPreflow(Arc uv, double delta) {
 		preflow_.put(uv.getName(), preflow_.get(uv.getName()) + delta);
 		uv.setCapacity(uv.getCapacity() - delta);
@@ -238,8 +268,13 @@ public class MaxFlow {
 			return false;
 		}
 		int dv = distances_.get(v);
-		if (dv >= residualGraph_.getNumberOfVertices() || 0 > dv) {
+		if (0 > dv) {
 			return false;
+		}
+		if (dv >= residualGraph_.getNumberOfVertices()) {
+			if (v.equals(source_)) {
+				return false;
+			}
 		}
 		if (excess_.get(v) <= 0) {
 			return false;
