@@ -156,17 +156,6 @@ public class PushRelabelAlgo {
 	private static void push(Arc uv) {
 		Vertex u = uv.getStartVertex();
 		Vertex v = uv.getEndVertex();
-		/*
-		The push operation applies on an admissible out-edge (u, v) of an active vertex u in Gf.
-		It moves min ( e(u), c_f(u,v) ) units of flow from u to v.
-		push(u, v):
-		    assert e[u] > 0 and h[u] == h[v] + 1
-		    Δ = min(e[u], c[u][v] - f[u][v])
-		    f[u][v] += Δ
-		    f[v][u] -= Δ
-		    e[u] -= Δ
-		    e[v] += Δ
-		    */
 		if (!vertexIsActive(u)) {
 			Log.e("Non-active " + u + ". Unable to push!");
 			return;
@@ -221,16 +210,6 @@ public class PushRelabelAlgo {
 	 * @param u the vertex u
 	 */
 	private static void relabel(Vertex u) {
-		/*
-		The relabel operation applies on an active vertex u without any admissible out-edges in G.
-		It modifies h(u) to the minimum value such that an admissible out-edge is created.
-		Note that this always increases h(u) and never creates a steep edge,
-		which is an edge (u, v) such that c_f(u, v) > 0, and h(u) > h(v) + 1.
-		relabel(u):
-    		assert e[u] > 0 and h[u] <= h[v] for all v such that f[u][v] < c[u][v]
-    		h[u] = min( h[v] for all v such that f[u][v] < c[u][v] ) + 1
-    		if such node v not exists, then set h[u] = n
-		 */
 		if (!vertexIsActive(u)) {
 			Log.e("Non-active " + u + ". Unable to relabel!");
 			return;
@@ -295,6 +274,9 @@ public class PushRelabelAlgo {
 		return correctDistance;
 	}
 	
+	/**
+	 * Prints the residual graph.
+	 */
 	private static void printResidualGraph() {
 		Log.p(residualGraph_.getName());
 		for (Vertex v : residualGraph_.getAllVertices()) {

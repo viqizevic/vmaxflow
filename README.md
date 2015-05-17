@@ -3,12 +3,12 @@
 Implementation of the Push-Relabel Method 
 for the Maximum Flow Problem
 
-    Usage: java -jar vmaxflow.jar <filename> <outputfile>
+    Usage: java -jar vmaxflow.jar <filename> <outputfilename>
 
-Given Graph G = (V, A) with capacity function c(a) > 0 for all arc a in A.
-Output is a flow function f over A, which is maximum.
+Given Graph *G = (V, A)* with capacity function *c(a) > 0* for all arc *a* in *A*.
+The output is a maximum flow function *f* over *A* from a source vertex *s* to the sink vertex *t*.
 
-Content example of an input file:
+Content of an example input file:
 
     # Node u, Node v, Capacity of arc uv
     0, 1, 15
@@ -40,5 +40,6 @@ Content of output file:
     4, 5, 7, 10
 
 The value of the flow on an arc `uv` will be placed in the third column.
+If no output file name specified, the default output file name will be used.
 
 For an example of the code usage see the file `SimpleExample.java` in `junit` folder.

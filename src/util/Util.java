@@ -1,6 +1,7 @@
 package util;
 
-import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * The Class Util.
@@ -32,97 +33,73 @@ public class Util {
 	}
 	
 	/**
-	 * Gets the file extension.
+	 * Write file.
 	 *
-	 * @param filePath the file path
-	 * @return the file extension
+	 * @param fileName the file name
+	 * @param content the content
 	 */
-	public static String getFileExtension(String filePath) {
-		String fileName = new File(filePath).getName();
-		if (fileName.contains(".")) {
-			return fileName.substring(fileName.lastIndexOf("."));
+	public static void writeFile(String fileName, String content) {
+		FileWriter fw = getNewFileWriter(fileName);
+		appendToFile(fw, content);
+		closeFileWriter(fw);
+		Log.p("File is written: " + fileName);
+	}
+	
+	/**
+	 * Gets the new file writer.
+	 *
+	 * @param fileName the file name
+	 * @return the new file writer
+	 */
+	public static FileWriter getNewFileWriter(String fileName) {
+		if (Log.eIf(fileName == null, "Cannot write file. No file name.")) {
+			return null;
 		}
-		return "";
-	}
-	
-	/**
-	 * Gets the file extension.
-	 *
-	 * @param filePaths the file paths
-	 * @return the file extension or null if extension is not unique
-	 */
-	public static String getFileExtension(String[] filePaths) {
-		String ext = null;
-		for (String s : filePaths) {
-			if (null == ext) {
-				ext = getFileExtension(s);
-			} else {
-				if (!ext.equals(getFileExtension(s))) {
-					return null;
-				}
-			}
+		try {
+			FileWriter fw = new FileWriter(fileName);
+			return fw;
+		} catch (IOException e) {
+			Log.e("Unable to write file: " + fileName, e);
 		}
-		return ext;
+		return null;
 	}
 	
 	/**
-	 * Removes the file extension.
+	 * Append to file.
 	 *
-	 * @param filePath the file path
-	 * @return the string
-	 */
-	public static String removeFileExtension(String filePath) {
-		return filePath.replaceAll(getFileExtension(filePath), "");
-	}
-	
-	/**
-	 * Gets the folder path.
-	 *
-	 * @param filePath the file path
-	 * @return the folder path
-	 */
-	public static String getFolderPath(String filePath) {
-		String folderPath = new File(filePath).getParent();
-		if (null == folderPath) {
-			folderPath = "";
-		} else if (!folderPath.isEmpty() && !folderPath.endsWith("/")){
-			folderPath += "/";
-		}
-		return folderPath;
-	}
-	
-	/**
-	 * Capitalize as title case.
-	 *
+	 * @param fileWriter the file writer
 	 * @param text the text
-	 * @return the string
 	 */
-	public static String capitalizeAsTitleCase(String text) {
-		if (null == text || text.isEmpty()) {
-			return text;
+	public static void appendToFile(FileWriter fileWriter, String text) {
+		if (Log.eIf(null == fileWriter, "Cannot append to file. Empty file writer given.")) {
+			return;
 		}
-		String[] s = text.toLowerCase().split(" ");
-		StringBuffer sb = new StringBuffer();
-		for (int i=0; i < s.length; i++) {
-			sb.append(Character.toUpperCase(s[i].charAt(0))).append(s[i].substring(1)).append(" ");
+		if (Log.eIf(null == text, "Cannot append text. Empty text given.")) {
+			return;
 		}
-		return sb.toString().trim();
+		try {
+			fileWriter.append(text);
+			fileWriter.flush();
+		} catch (IOException e) {
+			Log.e("Unable to append text to file: " + text, e);
+		}
 	}
 	
 	/**
-	 * String is in array.
+	 * Close file writer.
 	 *
-	 * @param target the target
-	 * @param array the array
-	 * @return true, if successful
+	 * @param fileWriter the file writer
 	 */
-	public static boolean stringIsInArray(String target, String[] array) {
-		for (String s : array) {
-			if (s.equals(target)) {
-				return true;
-			}
+	public static void closeFileWriter(FileWriter fileWriter) {
+		if (Log.eIf(null == fileWriter, "Cannot close file writer. Empty file writer is given.")) {
+			return;
 		}
-		return false;
+		try {
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (IOException e) {
+			Log.e("Unable to close file writer.", e);
+		}
 	}
 	
 }
