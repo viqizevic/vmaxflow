@@ -7,17 +7,17 @@ Given Graph G = (V, A) with capacity function c(a) > 0 for all arc a in A.
 Output is a flow function f over A, which is maximum.
 
 Content example of an input file:
-'''
-# Node u, Node v, Capacity of arc uv
-0, 1, 15
-0, 3, 4
-1, 2, 12
-2, 3, 3
-3, 4, 10
-4, 1, 5
-2, 5, 7
-4, 5, 10
-'''
+
+    # Node u, Node v, Capacity of arc uv
+    0, 1, 15
+    0, 3, 4
+    1, 2, 12
+    2, 3, 3
+    3, 4, 10
+    4, 1, 5
+    2, 5, 7
+    4, 5, 10
+
 
 The node u in the first input line will be interpreted as the source vertex.
 This is the node 0 in the example.
