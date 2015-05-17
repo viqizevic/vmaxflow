@@ -136,15 +136,6 @@ public class Graph {
 	}
 	
 	/**
-	 * Gets the all vertices names.
-	 *
-	 * @return the all vertices names
-	 */
-	public Collection<String> getAllVerticesNames() {
-		return vertices_.keySet();
-	}
-	
-	/**
 	 * Gets the all vertices.
 	 *
 	 * @return the all vertices
@@ -204,10 +195,12 @@ public class Graph {
 	public Vertex removeVertex(String name) {
 		if (!vertexExists(name)) {
 			Log.p("Try to remove a non-existent vertex: " + name);
+			return null;
 		}
 		Vertex loc = vertices_.get(name);
-		if (!loc.getIngoingArcs().isEmpty()) {
-			Log.p("Try to remove a vertex which still connected to a arc: " + name);
+		if (!loc.getIngoingArcs().isEmpty() || !loc.getOutgoingArcs().isEmpty()) {
+			Log.e("Unable to remove a vertex which still connected to an arc: " + name);
+			return null;
 		}
 		vertexNames_.remove(loc.getId());
 		return vertices_.remove(name);
@@ -304,15 +297,6 @@ public class Graph {
 	}
 
 	/**
-	 * Gets the all arcs names.
-	 *
-	 * @return the all arcs names
-	 */
-	public Collection<String> getAllArcsNames() {
-		return arcs_.keySet();
-	}
-	
-	/**
 	 * Gets the all arcs.
 	 *
 	 * @return the all arcs
@@ -349,29 +333,6 @@ public class Graph {
 	 */
 	public Arc getArc(int id) {
 		return arcs_.get(arcNames_.get(id));
-	}
-	
-	/**
-	 * Gets the connecting arc.
-	 *
-	 * @param u the start vertex
-	 * @param v the end vertex
-	 * @return the connecting arc if exists, otherwise null
-	 */
-	public Arc getConnectingArc(Vertex u, Vertex v) {
-		if (u.isConnectedTo(v)) {
-			for (Arc t : u.getIngoingArcs()) {
-				if (t.isConnecting(u, v)) {
-					return t;
-				}
-			}
-			for (Arc t : u.getOutgoingArcs()) {
-				if (t.isConnecting(u, v)) {
-					return t;
-				}
-			}
-		}
-		return null;
 	}
 	
 	/**
@@ -428,14 +389,9 @@ public class Graph {
 	 */
 	public boolean checkConsistency() {
 		boolean res = true;
-		for (String lName : getAllVerticesNames()) {
-			Vertex loc = getVertex(lName);
+		for (Vertex loc : getAllVertices()) {
 			if (loc.getId() <= -1) {
 				Log.w("Bad number is used as id for a vertex: " + loc.toString());
-				res = false;
-			}
-			if (!lName.equals(loc.getName())) {
-				Log.w("Name is not used as the key for the vertices hash map: " + loc.getName());
 				res = false;
 			}
 			if (loc.getIngoingArcs().isEmpty()) {
@@ -449,14 +405,9 @@ public class Graph {
 				}
 			}
 		}
-		for (String tName : getAllArcsNames()) {
-			Arc tr = getArc(tName);
+		for (Arc tr : getAllArcs()) {
 			if (tr.getId() <= -1) {
 				Log.w("Bad number is used as id for a arc: " + tr.toString());
-				res = false;
-			}
-			if (!tName.equals(tr.getName())) {
-				Log.w("Name is not used as the key for the arcs hash map: " + tr.getName());
 				res = false;
 			}
 			if (!vertexExists(tr.getStartVertex().getName()) || !vertexExists(tr.getEndVertex().getName())) {

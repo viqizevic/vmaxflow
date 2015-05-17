@@ -158,61 +158,6 @@ public class Vertex {
 		return removed;
 	}
 
-	/**
-	 * Gets the neighbors.
-	 *
-	 * @return the neighbors
-	 */
-	public Collection<Vertex> getNeighbors() {
-		Vector<Vertex> v = new Vector<Vertex>();
-		for (Arc t : ingoingArcs_.values()) {
-			v.add(getConnectedVertex(t));
-		}
-		for (Arc t : outgoingArcs_.values()) {
-			v.add(getConnectedVertex(t));
-		}
-		return v;
-	}
-	
-	/**
-	 * Checks if is connected to.
-	 *
-	 * @param otherVertex the other vertex
-	 * @return true, if is connected to
-	 */
-	public boolean isConnectedTo(Vertex otherVertex) {
-		return this.getNeighbors().contains(otherVertex);
-	}
-	
-	/**
-	 * Gets the connected vertex.
-	 *
-	 * @param connectingArc the connecting arc
-	 * @return the connected vertex
-	 */
-	public Vertex getConnectedVertex(Arc connectingArc) {
-		Vertex other = connectingArc.getStartVertex();
-		if (other.equals(this)) {
-			other = connectingArc.getEndVertex();
-		}
-		boolean error = false;
-		if (this.equals(connectingArc.getStartVertex())) {
-			if (!connectingArc.isConnecting(this, other)) {
-				error = true;
-			}
-		} else {
-			if (!connectingArc.isConnecting(other, this)) {
-				error = true;
-			}
-		}
-		if (error) {
-			Log.e("The arc given is not connected to this vertex,"
-					+ " cannot retrieve other connected vertex over this arc");
-			return null;
-		}
-		return other;
-	}
-	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

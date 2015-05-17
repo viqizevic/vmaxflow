@@ -110,17 +110,6 @@ public class Arc {
 		this.capacity_ = capacity;
 	}
 
-	/**
-	 * Checks if is connecting.
-	 *
-	 * @param startVertex the start vertex
-	 * @param endVertex the end vertex
-	 * @return true, if is connecting
-	 */
-	public boolean isConnecting(Vertex startVertex, Vertex endVertex) {
-		return startVertex_.equals(startVertex) && endVertex_.equals(endVertex);
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
