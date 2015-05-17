@@ -34,7 +34,11 @@ public class Main {
 		
 		HashMap<Arc, Double> flow = PushRelabelAlgo.computeMaxFlow(g, s, t);
 		for (Arc arc : flow.keySet()) {
-			Log.ps("f[%s] = %.2f", arc.getName(), flow.get(arc));
+//			Log.ps("f[%s] = %.2f", arc.getName(), flow.get(arc));
+			
+			Vertex u = arc.getStartVertex();
+			Vertex v = arc.getEndVertex();
+			Log.ps("%s, %s, %.0f, %.0f", u.getName(), v.getName(), flow.get(arc), arc.getCapacity());
 		}
 	}
 	

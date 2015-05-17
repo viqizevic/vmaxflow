@@ -19,9 +19,22 @@ Content example of an input file:
     4, 5, 10
 
 
-The node u in the first input line will be interpreted as the source vertex.
-This is the node 0 in the example.
-The node v in the last input line will be interpreted as the sink vertex.
-This is the node 5 in the example.
+The node `u` in the first input line will be interpreted as the source vertex.
+This is the node `0` in the example.
+The node `v` in the last input line will be interpreted as the sink vertex.
+This is the node `5` in the example.
 All lines beginning with the character '#' will be interpreted as comment lines.
 
+Content of output file:
+
+    # Node u, Node v, Flow on arc uv, Capacity of arc uv
+    4, 5, 7, 10
+    2, 5, 7, 7
+    0, 1, 10, 15
+    0, 3, 4, 4
+    1, 2, 10, 12
+    4, 1, 0, 5
+    2, 3, 3, 3
+    3, 4, 7, 10
+
+The value of the flow on an arc `uv` will be placed in the third column.
