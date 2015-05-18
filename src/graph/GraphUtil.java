@@ -48,7 +48,7 @@ public class GraphUtil {
 			}
 			Vertex u = arc.getStartVertex();
 			Vertex v = arc.getEndVertex();
-			content += String.format("%s, %s, %.0f, %.0f\n", u.getName(), v.getName(), flow.get(arc), arc.getCapacity());
+			content += String.format("%s, %s, %.0f, %.0f\n", u.getName(), v.getName(), f, arc.getCapacity());
 		}
 		Util.writeFile(outputFileName, content);
 	}

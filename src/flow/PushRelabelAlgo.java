@@ -40,7 +40,6 @@ public class PushRelabelAlgo {
 			if (vertexIsActive(v)) {
 				activeVertices_.add(v);
 			}
-			printResidualGraph();
 			Log.p("");
 		}
 		
