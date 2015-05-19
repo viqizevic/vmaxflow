@@ -33,9 +33,11 @@ public class Main {
 			output = args[1];
 		}
 		
-		Graph g = GraphReader.readFile(fileName);
-		Vertex s = g.getVertex(GraphReader.getSourceName());
-		Vertex t = g.getVertex(GraphReader.getSinkName());
+		GraphReader gr = new GraphReader();
+		gr.readFile(fileName);
+		Graph g = gr.getGraph();
+		Vertex s = gr.getSource();
+		Vertex t = gr.getSink();
 		Log.p(g.toString());
 		
 		HashMap<Arc, Double> flow = PushRelabelAlgo.computeMaxFlow(g, s, t);

@@ -11,8 +11,22 @@ import util.Log;
  */
 public class GraphReader {
 	
-	private static String sourceName_;
-	private static String sinkName_;
+	/** The graph. */
+	private Graph graph_;
+	
+	/** The source name. */
+	private String sourceName_;
+	
+	/** The sink name. */
+	private String sinkName_;
+	
+	/**
+	 * Instantiates a new graph reader.
+	 */
+	public GraphReader() {
+		sourceName_ = "";
+		sinkName_ = "";
+	}
 	
 	/**
 	 * Read file.
@@ -20,7 +34,7 @@ public class GraphReader {
 	 * @param fileName the file name
 	 * @return the graph
 	 */
-	public static Graph readFile(String fileName) {
+	public void readFile(String fileName) {
 		Log.p("Read file " + fileName);
 		Graph g = new Graph(fileName);
 		sourceName_ = null;
@@ -68,28 +82,40 @@ public class GraphReader {
 			br.close();
 		} catch (Exception e) {
 			Log.e("Cannot read file " + fileName, e);
-			return null;
 		}
 		
-		return g;
+		graph_ = g;
+	}
+	
+	public Graph getGraph() {
+		if (null == graph_) {
+			Log.w("No graph specified.. please call the read file method first.");
+		}
+		return graph_;
 	}
 	
 	/**
-	 * Gets the source name.
+	 * Gets the source.
 	 *
-	 * @return the source name
+	 * @return the source
 	 */
-	public static String getSourceName() {
-		return sourceName_;
+	public Vertex getSource() {
+		if (sourceName_.isEmpty()) {
+			Log.w("No source specified.. please call the read file method first.");
+		}
+		return graph_.getVertex(sourceName_);
 	}
 	
 	/**
-	 * Gets the sink name.
+	 * Gets the sink.
 	 *
-	 * @return the sink name
+	 * @return the sink
 	 */
-	public static String getSinkName() {
-		return sinkName_;
+	public Vertex getSink() {
+		if (sinkName_.isEmpty()) {
+			Log.w("No sink specified.. please call the read file method first.");
+		}
+		return graph_.getVertex(sinkName_);
 	}
 
 }
