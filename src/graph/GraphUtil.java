@@ -53,4 +53,33 @@ public class GraphUtil {
 		Util.writeFile(outputFileName, content);
 	}
 	
+	/**
+	 * Write the input file for push relabel algo.
+	 *
+	 * @param fileName the file name
+	 * @param graph the graph
+	 * @param source the source
+	 * @param sink the sink
+	 */
+	public static void writeInputFileForPushRelabelAlgo(String fileName, Graph graph, Vertex source, Vertex sink) {
+		String content = "# Node u, Node v, Capacity of uv\n";
+		String format = "%3s, %3s, %7.0f\n";
+		for (Arc a : source.getOutgoingArcs()) {
+			Vertex v = a.getEndVertex();
+			content += String.format(format, source.getName(), v.getName(), a.getCapacity());
+		}
+		for (Arc a : graph.getAllArcs()) {
+			Vertex u = a.getStartVertex();
+			Vertex v = a.getEndVertex();
+			if (u.equals(source) || v.equals(sink)) {
+				continue;
+			}
+			content += String.format(format, u.getName(), v.getName(), a.getCapacity());
+		}
+		for (Arc a : sink.getIngoingArcs()) {
+			Vertex u = a.getStartVertex();
+			content += String.format(format, u.getName(), sink.getName(), a.getCapacity());
+		}
+		FileOrganizer.writeFile(fileName, content);
+	}
 }
