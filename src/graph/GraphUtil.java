@@ -80,6 +80,6 @@ public class GraphUtil {
 			Vertex u = a.getStartVertex();
 			content += String.format(format, u.getName(), sink.getName(), a.getCapacity());
 		}
-		FileOrganizer.writeFile(fileName, content);
+		Util.writeFile(fileName, content);
 	}
 }
