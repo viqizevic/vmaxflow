@@ -7,6 +7,7 @@ import java.util.HashMap;
 import flow.PushRelabelAlgo;
 import graph.Arc;
 import graph.Graph;
+import graph.GraphUtil;
 import graph.TestGraph;
 import graph.Vertex;
 
@@ -35,13 +36,18 @@ public class TestPushRelabelAlgo {
 		Vertex s = g.getVertex("1");
 		Vertex t = g.getVertex(n+"");
 		
-		HashMap<Arc, Double> f = PushRelabelAlgo.computeMaxFlow(g, s, t);
+		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
+		HashMap<Arc, Double> f = algo.computeMaxFlow();
+		// Correct flow
 		assertNotNull(f);
 		assertFalse(f.isEmpty());
 		for (Arc a : g.getAllArcs()) {
 			assertNotNull(f.get(a));
 			assertEquals(1.0, (double) f.get(a), 0.001);
 		}
+		
+		// Correct min cut value
+		assertEquals(algo.getMaxFlowValue(), GraphUtil.totalFlow(algo.getMinCut(), f), 0.001);
 	}
 	
 	@Test
@@ -55,12 +61,15 @@ public class TestPushRelabelAlgo {
 		assertEquals(1, s.getOutgoingArcs().size());
 		assertEquals(1, t.getIngoingArcs().size());
 		
-		HashMap<Arc, Double> f = PushRelabelAlgo.computeMaxFlow(g, s, t);
+		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
+		HashMap<Arc, Double> f = algo.computeMaxFlow();
 		
 		Arc su = s.getOutgoingArcs().iterator().next();
 		Arc vt = t.getIngoingArcs().iterator().next();
 		assertEquals(f.get(su), f.get(vt));
 		assertEquals(k+1, (Double) f.get(su), 0.001);
+		
+		assertEquals(algo.getMaxFlowValue(), GraphUtil.totalFlow(algo.getMinCut(), f), 0.001);
 	}
 
 }

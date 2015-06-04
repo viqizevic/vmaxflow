@@ -50,15 +50,22 @@ public class SimpleExample {
 		g.addArc(d, t, 10);
 		
 		// run algo
-		HashMap<Arc, Double> flow = PushRelabelAlgo.computeMaxFlow(g, s, t);
+		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
+		HashMap<Arc, Double> flow = algo.computeMaxFlow();
 		
 		// print graph and flow
 		Log.turnOnPrintLog();
 		Log.p(g.toString());
+		
+		Log.ps("\nMax flow = " + algo.getMaxFlowValue());
 		for (Arc arc : flow.keySet()) {
 			Log.ps("f[%s] = %.2f", arc.getName(), flow.get(arc));
 		}
 		
+		Log.p("\nMin Cut:");
+		for (Arc arc : algo.getMinCut()) {
+			Log.p(arc.toString());
+		}
 	}
 	
 }
