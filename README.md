@@ -1,6 +1,6 @@
 # vmaxflow
 
-Implementation of the Push-Relabel Method 
+Implementation of the [Push-Relabel Method][]
 for the Maximum Flow Problem
 
     Usage: java -jar vmaxflow.jar <filename> <outputfilename>
@@ -43,3 +43,5 @@ The value of the flow on an arc `uv` will be placed in the third column.
 If no output file name specified, the default output file name will be used.
 
 For an example of the code usage see the file `SimpleExample.java` in `junit` folder.
+
+[Push-Relabel Method]: https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm
