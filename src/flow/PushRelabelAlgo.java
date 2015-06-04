@@ -68,8 +68,6 @@ public class PushRelabelAlgo {
 				Log.p("Flow " + a + " " + preflow_.get(a));
 			}
 		}
-		
-		printResidualGraph();
 		return flow;
 	}
 	

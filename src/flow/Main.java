@@ -43,12 +43,10 @@ public class Main {
 		
 		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
 		HashMap<Arc, Double> flow = algo.computeMaxFlow();
-		
-		GraphUtil.writeOutputFile(output, g, flow);
+		Log.ps("\nMax flow = " + algo.getMaxFlowValue());
 		
 		Log.p("");
-		Collection<Arc> cut = algo.getMinCut();
-		Log.p(cut + "");
+		GraphUtil.writeOutputFile(output, g, flow);
 	}
 	
 }
