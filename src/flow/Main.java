@@ -1,14 +1,14 @@
 package flow;
 
-import java.util.Collection;
-import java.util.HashMap;
-
-import util.Log;
 import graph.Arc;
 import graph.Graph;
 import graph.GraphReader;
 import graph.GraphUtil;
 import graph.Vertex;
+
+import java.util.HashMap;
+
+import util.Log;
 
 /**
  * The Class Main.
