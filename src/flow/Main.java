@@ -1,5 +1,6 @@
 package flow;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import util.Log;
@@ -40,9 +41,14 @@ public class Main {
 		Vertex t = gr.getSink();
 		Log.p(g.toString());
 		
-		HashMap<Arc, Double> flow = PushRelabelAlgo.computeMaxFlow(g, s, t);
+		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
+		HashMap<Arc, Double> flow = algo.computeMaxFlow();
 		
 		GraphUtil.writeOutputFile(output, g, flow);
+		
+		Log.p("");
+		Collection<Arc> cut = algo.getMinCut();
+		Log.p(cut + "");
 	}
 	
 }

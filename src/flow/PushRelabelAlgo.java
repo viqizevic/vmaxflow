@@ -2,9 +2,12 @@ package flow;
 
 import graph.Arc;
 import graph.Graph;
+import graph.GraphUtil;
 import graph.Vertex;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -12,26 +15,41 @@ import util.Log;
 
 public class PushRelabelAlgo {
 	
-	private static final String RES_ = "Residual";
+	private static final String RES_ = "RESIDUAL_";
 	
-	private static Graph residualGraph_;
+	private Graph graph_;
 	
-	private static Vertex source_;
+	private Graph residualGraph_;
 	
-	private static Vertex sink_;
+	private Vertex source_;
 	
-	private static HashMap<String, Double> preflow_;
+	private Vertex sink_;
 	
-	private static HashMap<Vertex, Double> excess_;
+	private HashMap<String, Double> preflow_;
 	
-	private static HashMap<Vertex, Integer> distances_;
+	private HashMap<Vertex, Double> excess_;
 	
-	private static LinkedList<Vertex> activeVertices_;
+	private HashMap<Vertex, Integer> distances_;
 	
-	public static HashMap<Arc, Double> computeMaxFlow(Graph graph, Vertex s, Vertex t) {
-
+	private LinkedList<Vertex> activeVertices_;
+	
+	/**
+	 * Instantiates a new push relabel algo.
+	 *
+	 * @param graph the graph
+	 * @param s the s
+	 * @param t the t
+	 */
+	public PushRelabelAlgo(Graph graph, Vertex s, Vertex t) {
 		initialize(graph, s, t);
-		
+	}
+	
+	/**
+	 * Compute max flow.
+	 *
+	 * @return the hash map
+	 */
+	public HashMap<Arc, Double> computeMaxFlow() {
 		printResidualGraph();
 		
 		while(!activeVertices_.isEmpty()) {
@@ -45,15 +63,51 @@ public class PushRelabelAlgo {
 		
 		HashMap<Arc, Double> flow = new HashMap<Arc, Double>();
 		for (String a : preflow_.keySet()) {
-			if (graph.arcExists(a)) {
-				flow.put(graph.getArc(a), preflow_.get(a));
+			if (graph_.arcExists(a)) {
+				flow.put(graph_.getArc(a), preflow_.get(a));
 				Log.p("Flow " + a + " " + preflow_.get(a));
 			}
 		}
+		
+		printResidualGraph();
 		return flow;
 	}
 	
-	private static void initialize(Graph graph, Vertex s, Vertex t) {
+	/**
+	 * Gets the min cut.
+	 *
+	 * @return the min cut
+	 */
+	public Collection<Arc> getMinCut() {
+		HashSet<Vertex> set = new HashSet<Vertex>();
+		int n = graph_.getNumberOfVertices();
+		if (null == distances_) {
+			Log.w("Cannot get min cut. Please call the method to compute max flow first.");
+			return null;
+		}
+		for (Vertex v : distances_.keySet()) {
+			if (distances_.get(v) >= n) {
+				set.add(graph_.getVertex(v.getName()));
+			}
+		}
+		return GraphUtil.getOutgoingArcs(graph_, set);
+	}
+	
+	/**
+	 * Gets the max flow value.
+	 *
+	 * @return the max flow value
+	 */
+	public double getMaxFlowValue() {
+		double f = 0.0;
+		for (Arc a : graph_.getVertex(source_.getName()).getOutgoingArcs()) {
+			f += preflow_.get(a.getName());
+		}
+		return f;
+	}
+	
+	private void initialize(Graph graph, Vertex s, Vertex t) {
+		graph_ = graph;
 		residualGraph_ = new Graph(getResidualName(graph.getName()));
 		for (Vertex v : graph.getAllVertices()) {
 			Vertex u = new Vertex(v.getName());
@@ -96,7 +150,7 @@ public class PushRelabelAlgo {
 	/**
 	 * Sets the initial distances.
 	 */
-	private static void setInitialDistances() {
+	private void setInitialDistances() {
 		distances_ = new HashMap<Vertex, Integer>();
 		for (Vertex v : residualGraph_.getAllVertices()) {
 			distances_.put(v, 1);
@@ -113,7 +167,7 @@ public class PushRelabelAlgo {
 	 *
 	 * @param v the v
 	 */
-	private static void discharge(Vertex v) {
+	private void discharge(Vertex v) {
 		if (!vertexIsActive(v)) {
 			Log.e("Non-active " + v + ". Unable to discharge!");
 			return;
@@ -135,13 +189,23 @@ public class PushRelabelAlgo {
 	}
 	
 	/**
+	 * Checks if is residual name.
+	 *
+	 * @param name the name
+	 * @return true, if is residual name
+	 */
+	private boolean isResidualName(String name) {
+		return name.startsWith(RES_);
+	}
+	
+	/**
 	 * Gets the residual name.
 	 *
 	 * @param name the name
 	 * @return the residual name
 	 */
-	private static String getResidualName(String name) {
-		if (name.startsWith(RES_)) {
+	private String getResidualName(String name) {
+		if (isResidualName(name)) {
 			return name.substring(RES_.length());
 		}
 		return RES_ + name;
@@ -152,7 +216,7 @@ public class PushRelabelAlgo {
 	 *
 	 * @param uv the uv
 	 */
-	private static void push(Arc uv) {
+	private void push(Arc uv) {
 		Vertex u = uv.getStartVertex();
 		Vertex v = uv.getEndVertex();
 		if (!vertexIsActive(u)) {
@@ -195,7 +259,7 @@ public class PushRelabelAlgo {
 	 * @param uv the uv
 	 * @param delta the delta
 	 */
-	private static void addToPreflow(Arc uv, double delta) {
+	private void addToPreflow(Arc uv, double delta) {
 		preflow_.put(uv.getName(), preflow_.get(uv.getName()) + delta);
 		uv.setCapacity(uv.getCapacity() - delta);
 		if (0.0 == uv.getCapacity()) {
@@ -208,7 +272,7 @@ public class PushRelabelAlgo {
 	 *
 	 * @param u the vertex u
 	 */
-	private static void relabel(Vertex u) {
+	private void relabel(Vertex u) {
 		if (!vertexIsActive(u)) {
 			Log.e("Non-active " + u + ". Unable to relabel!");
 			return;
@@ -241,7 +305,7 @@ public class PushRelabelAlgo {
 	 * @param v the v
 	 * @return true, if successful
 	 */
-	private static boolean vertexIsActive(Vertex v) {
+	private boolean vertexIsActive(Vertex v) {
 		if (v.equals(sink_)) {
 			return false;
 		}
@@ -266,7 +330,7 @@ public class PushRelabelAlgo {
 	 * @param arc the arc
 	 * @return true, if successful
 	 */
-	private static boolean arcIsAdmissible(Arc arc) {
+	private boolean arcIsAdmissible(Arc arc) {
 		Vertex u = arc.getStartVertex();
 		Vertex v = arc.getEndVertex();
 		boolean correctDistance = (distances_.get(u) >= distances_.get(v) + 1);
@@ -276,7 +340,7 @@ public class PushRelabelAlgo {
 	/**
 	 * Prints the residual graph.
 	 */
-	private static void printResidualGraph() {
+	private void printResidualGraph() {
 		Log.p(residualGraph_.getName());
 		for (Vertex v : residualGraph_.getAllVertices()) {
 			String active = vertexIsActive(v) ? "active" : "passive";
