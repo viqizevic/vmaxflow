@@ -2,7 +2,6 @@ package flow;
 
 import graph.Arc;
 import graph.Graph;
-import graph.GraphUtil;
 import graph.Vertex;
 
 import java.util.Collection;
@@ -74,18 +73,20 @@ public class PushRelabelAlgo {
 		for (String a : preflow_.keySet()) {
 			if (graph_.arcExists(a)) {
 				flow.put(graph_.getArc(a), preflow_.get(a));
-				Log.p("Flow " + a + " " + preflow_.get(a));
+				if (preflow_.get(a) > 0) {
+					Log.p("Flow " + a + " " + preflow_.get(a));
+				}
 			}
 		}
 		return flow;
 	}
 	
 	/**
-	 * Gets the min cut.
+	 * Gets the min cut set close to source.
 	 *
-	 * @return the min cut
+	 * @return the min cut set close to source
 	 */
-	public Collection<Arc> getMinCut() {
+	public HashSet<Vertex> getMinCutSetCloseToSource() {
 		HashSet<Vertex> set = new HashSet<Vertex>();
 		int n = graph_.getNumberOfVertices();
 		if (null == distances_) {
@@ -97,7 +98,16 @@ public class PushRelabelAlgo {
 				set.add(graph_.getVertex(v.getName()));
 			}
 		}
-		return GraphUtil.getOutgoingArcs(graph_, set);
+		return set;
+	}
+	
+	/**
+	 * Gets the min cut.
+	 *
+	 * @return the min cut
+	 */
+	public Collection<Arc> getMinCut() {
+		return Graph.getOutgoingArcs(getMinCutSetCloseToSource());
 	}
 	
 	/**

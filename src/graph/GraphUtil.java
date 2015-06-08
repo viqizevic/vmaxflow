@@ -2,8 +2,6 @@ package graph;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Vector;
 
 import util.Log;
 import util.Util;
@@ -85,23 +83,4 @@ public class GraphUtil {
 		Util.writeFile(fileName, content);
 	}
 	
-	/**
-	 * Gets the outgoing arcs of a set of vertices.
-	 *
-	 * @param graph the graph
-	 * @param set the set
-	 * @return the outgoing arcs
-	 */
-	public static Collection<Arc> getOutgoingArcs(Graph graph, HashSet<Vertex> set) {
-		Vector<Arc> cut = new Vector<Arc>();
-		for (Vertex u : set) {
-			for (Arc a : u.getOutgoingArcs()) {
-				Vertex v = a.getEndVertex();
-				if (!set.contains(v)) {
-					cut.add(a);
-				}
-			}
-		}
-		return cut;
-	}
 }
