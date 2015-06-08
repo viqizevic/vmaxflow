@@ -78,6 +78,10 @@ public class GraphUtil {
 		}
 		for (Arc a : sink.getIngoingArcs()) {
 			Vertex u = a.getStartVertex();
+			if (u.equals(source)) {
+				// avoid double print (already printed before as outgoing arc from source)
+				continue;
+			}
 			content += String.format(format, u.getName(), sink.getName(), a.getCapacity());
 		}
 		Util.writeFile(fileName, content);
