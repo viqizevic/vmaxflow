@@ -61,6 +61,15 @@ public class PushRelabelAlgo {
 			Log.p("");
 		}
 		
+		return getFlow();
+	}
+	
+	/**
+	 * Gets the flow.
+	 *
+	 * @return the flow
+	 */
+	public HashMap<Arc, Double> getFlow() {
 		HashMap<Arc, Double> flow = new HashMap<Arc, Double>();
 		for (String a : preflow_.keySet()) {
 			if (graph_.arcExists(a)) {
