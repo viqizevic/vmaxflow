@@ -48,7 +48,7 @@ public class GraphUtil {
 			}
 			Vertex u = arc.getStartVertex();
 			Vertex v = arc.getEndVertex();
-			content += String.format("%s, %s, %.0f, %.0f\n", u.getName(), v.getName(), f, arc.getCapacity());
+			content += String.format("%s, %s, %.3f, %.3f\n", u.getName(), v.getName(), f, arc.getCapacity());
 		}
 		Util.writeFile(outputFileName, content);
 	}
@@ -63,7 +63,7 @@ public class GraphUtil {
 	 */
 	public static void writeInputFileForPushRelabelAlgo(String fileName, Graph graph, Vertex source, Vertex sink) {
 		String content = "# Node u, Node v, Capacity of uv\n";
-		String format = "%3s, %3s, %7.0f\n";
+		String format = "%3s, %3s, %7.3f\n";
 		for (Arc a : source.getOutgoingArcs()) {
 			Vertex v = a.getEndVertex();
 			content += String.format(format, source.getName(), v.getName(), a.getCapacity());

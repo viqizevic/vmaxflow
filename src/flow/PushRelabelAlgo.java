@@ -248,7 +248,7 @@ public class PushRelabelAlgo {
 		if (0.0 == delta) {
 			Log.w("Delta is zero: " + delta);
 		}
-		Log.ps("Push %.1f over arc %s", delta, uv.getName());
+		Log.ps("Push %.2f over arc %s", delta, uv.getName());
 		addToPreflow(uv, delta);
 		Arc vu = residualGraph_.getArc(getResidualName(uv.getName()));
 		if (null == vu) {
@@ -361,10 +361,10 @@ public class PushRelabelAlgo {
 		Log.p(residualGraph_.getName());
 		for (Vertex v : residualGraph_.getAllVertices()) {
 			String active = vertexIsActive(v) ? "active" : "passive";
-			Log.ps("vertex %s: d=%d - e=%.1f - %s", v.getName(), distances_.get(v), excess_.get(v), active);
+			Log.ps("vertex %s: d=%d - e=%.2f - %s", v.getName(), distances_.get(v), excess_.get(v), active);
 		}
 		for (Arc a : residualGraph_.getAllArcs()) {
-			Log.ps("arc %s: f=%.1f - rc=%.1f", a.getName(), preflow_.get(a.getName()), a.getCapacity());
+			Log.ps("arc %s: f=%.2f - rc=%.2f", a.getName(), preflow_.get(a.getName()), a.getCapacity());
 		}
 	}
 
