@@ -162,19 +162,19 @@ public class Log {
 			return;
 		}
 		if (null == logFileWriter_) {
-			logFileWriter_ = Util.getNewFileWriter(LOG_FILE_NAME_);
+			logFileWriter_ = FileOrganizer.getNewFileWriter(LOG_FILE_NAME_);
 		}
 		if (!content.endsWith("\n")) {
 			content += "\n";
 		}
-		Util.appendToFile(logFileWriter_, content);
+		FileOrganizer.appendToFile(logFileWriter_, content);
 	}
 	
 	/**
 	 * Finish creating log file.
 	 */
 	public static void finishCreatingLogFile() {
-		Util.closeFileWriter(logFileWriter_);
+		FileOrganizer.closeFileWriter(logFileWriter_);
 	}
 	
 }

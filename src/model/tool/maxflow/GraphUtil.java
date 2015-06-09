@@ -3,6 +3,7 @@ package model.tool.maxflow;
 import java.util.Collection;
 import java.util.HashMap;
 
+import util.FileOrganizer;
 import util.Log;
 import util.Util;
 
@@ -50,7 +51,7 @@ public class GraphUtil {
 			Vertex v = arc.getEndVertex();
 			content += String.format("%s, %s, %.3f, %.3f\n", u.getName(), v.getName(), f, arc.getCapacity());
 		}
-		Util.writeFile(outputFileName, content);
+		FileOrganizer.writeFile(outputFileName, content);
 	}
 	
 	/**
@@ -84,7 +85,7 @@ public class GraphUtil {
 			}
 			content += String.format(format, u.getName(), sink.getName(), a.getCapacity());
 		}
-		Util.writeFile(fileName, content);
+		FileOrganizer.writeFile(fileName, content);
 	}
 	
 }
