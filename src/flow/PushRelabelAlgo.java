@@ -198,7 +198,7 @@ public class PushRelabelAlgo {
 				if (arcIsAdmissible(vw)) {
 					push(vw);
 				}
-			} while (0.0001 <= excess_.get(v) && !list.isEmpty());
+			} while (0.0 <= excess_.get(v) && !list.isEmpty());
 		}
 		if (vertexIsActive(v)) {
 			relabel(v);
@@ -237,11 +237,11 @@ public class PushRelabelAlgo {
 		Vertex u = uv.getStartVertex();
 		Vertex v = uv.getEndVertex();
 		if (!vertexIsActive(u)) {
-			Log.e("Non-active " + u + ". Unable to push!");
+			Log.w("Non-active " + u + ". Unable to push!");
 			return;
 		}
 		if (!arcIsAdmissible(uv)) {
-			Log.e("Arc is not admissible, " + uv + ". Unable to push!");
+			Log.w("Arc is not admissible, " + uv + ". Unable to push!");
 			return;
 		}
 		double delta = Math.min(excess_.get(u), uv.getCapacity());
@@ -291,12 +291,12 @@ public class PushRelabelAlgo {
 	 */
 	private void relabel(Vertex u) {
 		if (!vertexIsActive(u)) {
-			Log.e("Non-active " + u + ". Unable to relabel!");
+			Log.w("Non-active " + u + ". Unable to relabel!");
 			return;
 		}
 		for (Arc uv : u.getOutgoingArcs()) {
 			if (arcIsAdmissible(uv)) {
-				Log.e("Found admissible outgoing arc " + uv + ". Unable to relabel!");
+				Log.w("Found admissible outgoing arc " + uv + ". Unable to relabel!");
 				return;
 			}
 		}
@@ -335,7 +335,7 @@ public class PushRelabelAlgo {
 				return false;
 			}
 		}
-		if (excess_.get(v) <= 0) {
+		if (excess_.get(v) <= 0.0) {
 			return false;
 		}
 		return true;
