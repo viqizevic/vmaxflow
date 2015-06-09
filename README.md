@@ -1,7 +1,7 @@
 # vmaxflow
 
 Implementation of the [Push-Relabel Method][]
-for the Maximum Flow Problem
+for the [Maximum Flow Problem][].
 
     Usage: java -jar vmaxflow.jar <filename> <outputfilename>
 
@@ -50,3 +50,4 @@ Cherkassky, B. V., Goldberg,, A. V.: On Implementing the Push-Relabel Method for
 Algorithmica 19, 390-410 (1997)
 
 [Push-Relabel Method]: https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm
+[Maximum Flow Problem]: https://en.wikipedia.org/wiki/Maximum_flow_problem
