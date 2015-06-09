@@ -1,8 +1,4 @@
-package flow;
-
-import graph.Arc;
-import graph.Graph;
-import graph.Vertex;
+package model.tool.maxflow;
 
 import java.util.Collection;
 import java.util.HashMap;

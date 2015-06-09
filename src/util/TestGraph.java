@@ -1,6 +1,7 @@
-package graph;
+package util;
 
-import util.Log;
+import model.tool.maxflow.Graph;
+import model.tool.maxflow.Vertex;
 
 public class TestGraph {
 	

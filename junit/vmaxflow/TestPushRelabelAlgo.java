@@ -4,17 +4,17 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
-import flow.PushRelabelAlgo;
-import graph.Arc;
-import graph.Graph;
-import graph.GraphUtil;
-import graph.TestGraph;
-import graph.Vertex;
+import model.tool.maxflow.Arc;
+import model.tool.maxflow.Graph;
+import model.tool.maxflow.GraphUtil;
+import model.tool.maxflow.PushRelabelAlgo;
+import model.tool.maxflow.Vertex;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import util.Log;
+import util.TestGraph;
 
 public class TestPushRelabelAlgo {
 	

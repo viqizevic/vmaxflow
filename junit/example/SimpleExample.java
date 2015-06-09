@@ -1,12 +1,11 @@
 package example;
 
-import flow.PushRelabelAlgo;
-import graph.Arc;
-import graph.Graph;
-import graph.Vertex;
-
 import java.util.HashMap;
 
+import model.tool.maxflow.Arc;
+import model.tool.maxflow.Graph;
+import model.tool.maxflow.PushRelabelAlgo;
+import model.tool.maxflow.Vertex;
 import util.Log;
 
 /**

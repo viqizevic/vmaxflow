@@ -1,10 +1,11 @@
-package graph;
+package util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
-import util.Log;
+import model.tool.maxflow.Graph;
+import model.tool.maxflow.Vertex;
 
 /**
  * The Class GraphReader.

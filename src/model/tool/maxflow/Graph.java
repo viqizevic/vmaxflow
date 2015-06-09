@@ -1,4 +1,4 @@
-package graph;
+package model.tool.maxflow;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -345,7 +345,7 @@ public class Graph {
 	 */
 	public Arc removeArc(String name) {
 		if (!arcExists(name)) {
-			Log.e("Try to remove a arc which not exists.. " + name);
+			Log.e("Try to remove an arc which not exists.. " + name);
 			return null;
 		}
 		Arc r = arcs_.remove(name);

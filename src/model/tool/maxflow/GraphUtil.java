@@ -1,4 +1,4 @@
-package graph;
+package model.tool.maxflow;
 
 import java.util.Collection;
 import java.util.HashMap;

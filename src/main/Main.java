@@ -1,13 +1,13 @@
-package flow;
-
-import graph.Arc;
-import graph.Graph;
-import graph.GraphReader;
-import graph.GraphUtil;
-import graph.Vertex;
+package main;
 
 import java.util.HashMap;
 
+import model.tool.maxflow.Arc;
+import model.tool.maxflow.Graph;
+import model.tool.maxflow.GraphUtil;
+import model.tool.maxflow.PushRelabelAlgo;
+import model.tool.maxflow.Vertex;
+import util.GraphReader;
 import util.Log;
 
 /**
