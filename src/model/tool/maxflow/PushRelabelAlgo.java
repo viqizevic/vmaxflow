@@ -168,13 +168,30 @@ public class PushRelabelAlgo {
 	 */
 	private void setInitialDistances() {
 		distances_ = new HashMap<Vertex, Integer>();
-		for (Vertex v : residualGraph_.getAllVertices()) {
-			distances_.put(v, 1);
-		}
+		LinkedList<Vertex> queue = new LinkedList<Vertex>();
+		queue.add(sink_);
 		distances_.put(sink_, 0);
-		distances_.put(source_, 2);
-		if (2 == residualGraph_.getNumberOfVertices()) {
-			distances_.put(source_, 1); // since no other node exists with distance 1
+		while (!queue.isEmpty()) {
+			Vertex v = queue.pop();
+			int dv = distances_.get(v);
+			for (Arc uv : v.getIngoingArcs()) {
+				Vertex u = uv.getStartVertex();
+				int du = dv + 1;
+				if (du > residualGraph_.getNumberOfVertices()) {
+					du = residualGraph_.getNumberOfVertices();
+				}
+				if (!distances_.containsKey(u)) {
+					queue.add(u);
+					distances_.put(u, du);
+				}
+			}
+		}
+		if (distances_.size() < residualGraph_.getNumberOfVertices()) {
+			for (Vertex v : residualGraph_.getAllVertices()) {
+				if (!distances_.containsKey(v)) {
+					distances_.put(v, residualGraph_.getNumberOfVertices());
+				}
+			}
 		}
 	}
 	
