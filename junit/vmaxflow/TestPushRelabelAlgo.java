@@ -7,7 +7,7 @@ import java.util.HashMap;
 import model.tool.maxflow.Arc;
 import model.tool.maxflow.Graph;
 import model.tool.maxflow.GraphUtil;
-import model.tool.maxflow.PushRelabelAlgo;
+import model.tool.maxflow.PushRelabelFifoAlgo;
 import model.tool.maxflow.Vertex;
 
 import org.junit.Before;
@@ -36,7 +36,7 @@ public class TestPushRelabelAlgo {
 		Vertex s = g.getVertex("1");
 		Vertex t = g.getVertex(n+"");
 		
-		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
+		PushRelabelFifoAlgo algo = new PushRelabelFifoAlgo(g, s, t);
 		HashMap<Arc, Double> f = algo.computeMaxFlow();
 		// Correct flow
 		assertNotNull(f);
@@ -61,7 +61,7 @@ public class TestPushRelabelAlgo {
 		assertEquals(1, s.getOutgoingArcs().size());
 		assertEquals(1, t.getIngoingArcs().size());
 		
-		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
+		PushRelabelFifoAlgo algo = new PushRelabelFifoAlgo(g, s, t);
 		HashMap<Arc, Double> f = algo.computeMaxFlow();
 		
 		Arc su = s.getOutgoingArcs().iterator().next();

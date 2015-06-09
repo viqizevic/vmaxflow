@@ -8,7 +8,7 @@ import java.util.Vector;
 
 import util.Log;
 
-public class PushRelabelAlgo {
+public class PushRelabelFifoAlgo {
 	
 	private static final String RES_ = "RESIDUAL_";
 	
@@ -26,9 +26,7 @@ public class PushRelabelAlgo {
 	
 	private HashMap<Vertex, Integer> distances_;
 	
-	private HashMap<Integer, LinkedList<Vertex>> activeVertices_;
-	
-	private int largestDistance_;
+	private LinkedList<Vertex> activeVertices_;
 	
 	/**
 	 * Instantiates a new push relabel algo.
@@ -37,7 +35,7 @@ public class PushRelabelAlgo {
 	 * @param s the s
 	 * @param t the t
 	 */
-	public PushRelabelAlgo(Graph graph, Vertex s, Vertex t) {
+	public PushRelabelFifoAlgo(Graph graph, Vertex s, Vertex t) {
 		initialize(graph, s, t);
 	}
 	
@@ -158,8 +156,7 @@ public class PushRelabelAlgo {
 		excess_.put(source_, excess_.get(source_) + 1);
 		// set distances
 		setInitialDistances();
-		activeVertices_ = new HashMap<Integer, LinkedList<Vertex>>();
-		largestDistance_ = 0;
+		activeVertices_ = new LinkedList<Vertex>();
 		addToActiveVerticesList(source_);
 	}
 	
@@ -179,19 +176,12 @@ public class PushRelabelAlgo {
 	}
 	
 	/**
-	 * Adds the to active vertices list.
+	 * Adds to active vertices list.
 	 *
 	 * @param v the v
 	 */
 	private void addToActiveVerticesList(Vertex v) {
-		Integer dv = distances_.get(v);
-		if (!activeVertices_.containsKey(dv)) {
-			activeVertices_.put(dv, new LinkedList<Vertex>());
-		}
-		activeVertices_.get(dv).add(v);
-		if (largestDistance_ < dv) {
-			largestDistance_ = dv;
-		}
+		activeVertices_.add(v);
 	}
 	
 	/**
@@ -200,17 +190,7 @@ public class PushRelabelAlgo {
 	 * @return the vertex
 	 */
 	private Vertex retrieveActiveVertex() {
-		if (!activeVertices_.containsKey(largestDistance_)) {
-			Log.e("Cannot retrieve active vertex from the level " + largestDistance_);
-		}
-		Vertex v = activeVertices_.get(largestDistance_).pop();
-		if (activeVertices_.get(largestDistance_).isEmpty()) {
-			activeVertices_.remove(largestDistance_);
-		}
-		while (!activeVertices_.containsKey(largestDistance_) && largestDistance_ > 0) {
-			largestDistance_--;
-		}
-		return v;
+		return activeVertices_.pop();
 	}
 	
 	/**
@@ -229,7 +209,7 @@ public class PushRelabelAlgo {
 	 */
 	private void discharge(Vertex v) {
 		if (!vertexIsActive(v)) {
-			Log.w("Non-active " + v + ". Unable to discharge!");
+			Log.e("Non-active " + v + ". Unable to discharge!");
 			return;
 		}
 		Log.p("Discharge vertex " + v.getName());

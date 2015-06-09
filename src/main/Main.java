@@ -6,6 +6,7 @@ import model.tool.maxflow.Arc;
 import model.tool.maxflow.Graph;
 import model.tool.maxflow.GraphUtil;
 import model.tool.maxflow.PushRelabelAlgo;
+import model.tool.maxflow.PushRelabelFifoAlgo;
 import model.tool.maxflow.Vertex;
 import util.GraphReader;
 import util.Log;
@@ -43,14 +44,32 @@ public class Main {
 		Log.p(g.toString());
 		
 		String timer = Timer.startNewTimer();
-		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
-		HashMap<Arc, Double> flow = algo.computeMaxFlow();
-		Timer.stopTimerAndPrintLog(timer, "Algo");
+		HashMap<Arc, Double> flow = runAlgo(g, s, t, PushRelabelAlgo.class.toString());
+		Timer.stopTimerAndPrintLog(timer, "Algo HL");
 		
-		Log.ps("\nMax flow = " + algo.getMaxFlowValue());
+		String timer2 = Timer.startNewTimer();
+		flow = runAlgo(g, s, t, PushRelabelFifoAlgo.class.toString());
+		Timer.stopTimerAndPrintLog(timer2, "Algo FIFO");
 		
 		Log.p("");
 		GraphUtil.writeOutputFile(output, g, flow);
+	}
+	
+	private static HashMap<Arc, Double> runAlgo(Graph g, Vertex s, Vertex t, String algoClass) {
+		HashMap<Arc, Double> flow = null;
+		Log.turnOffPrintLog();
+		if (algoClass.equals(PushRelabelAlgo.class.toString())) {
+			PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
+			flow = algo.computeMaxFlow();
+			Log.turnOnPrintLog();
+			Log.ps("\nMax flow = " + algo.getMaxFlowValue());
+		} else if (algoClass.equals(PushRelabelFifoAlgo.class.toString())) {
+			PushRelabelFifoAlgo algo = new PushRelabelFifoAlgo(g, s, t);
+			flow = algo.computeMaxFlow();
+			Log.turnOnPrintLog();
+			Log.ps("\nMax flow = " + algo.getMaxFlowValue());
+		}
+		return flow;
 	}
 	
 }
