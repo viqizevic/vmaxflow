@@ -9,6 +9,7 @@ import model.tool.maxflow.PushRelabelAlgo;
 import model.tool.maxflow.Vertex;
 import util.GraphReader;
 import util.Log;
+import util.Timer;
 
 /**
  * The Class Main.
@@ -41,8 +42,11 @@ public class Main {
 		Vertex t = gr.getSink();
 		Log.p(g.toString());
 		
+		String timer = Timer.startNewTimer();
 		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
 		HashMap<Arc, Double> flow = algo.computeMaxFlow();
+		Timer.stopTimerAndPrintLog(timer, "Algo");
+		
 		Log.ps("\nMax flow = " + algo.getMaxFlowValue());
 		
 		Log.p("");
