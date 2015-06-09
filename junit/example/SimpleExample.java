@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import model.tool.maxflow.Arc;
 import model.tool.maxflow.Graph;
-import model.tool.maxflow.PushRelabelFifoAlgo;
+import model.tool.maxflow.PushRelabelAlgo;
 import model.tool.maxflow.Vertex;
 import util.Log;
 
@@ -49,7 +49,7 @@ public class SimpleExample {
 		g.addArc(d, t, 10);
 		
 		// run algo
-		PushRelabelFifoAlgo algo = new PushRelabelFifoAlgo(g, s, t);
+		PushRelabelAlgo algo = new PushRelabelAlgo(g, s, t);
 		HashMap<Arc, Double> flow = algo.computeMaxFlow();
 		
 		// print graph and flow
