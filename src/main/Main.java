@@ -46,12 +46,12 @@ public class Main {
 		String timer = Timer.startNewTimer();
 		HashMap<Arc, Double> flow = runAlgo(g, s, t, PushRelabelAlgo.class.toString());
 		Timer.stopTimerAndPrintLog(timer, "Algo HL");
+		GraphUtil.writeOutputFile(output+".hl.txt", g, flow);
 		
 		String timer2 = Timer.startNewTimer();
 		flow = runAlgo(g, s, t, PushRelabelFifoAlgo.class.toString());
 		Timer.stopTimerAndPrintLog(timer2, "Algo FIFO");
 		
-		Log.p("");
 		GraphUtil.writeOutputFile(output, g, flow);
 	}
 	

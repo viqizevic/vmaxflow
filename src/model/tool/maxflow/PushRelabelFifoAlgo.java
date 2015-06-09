@@ -28,6 +28,10 @@ public class PushRelabelFifoAlgo {
 	
 	private LinkedList<Vertex> activeVertices_;
 	
+	private int numberOfRelabelings_;
+	
+	private HashMap<Integer, HashSet<Vertex>> verticesCategorizedByDistances_;
+	
 	/**
 	 * Instantiates a new push relabel algo.
 	 *
@@ -155,9 +159,11 @@ public class PushRelabelFifoAlgo {
 		}
 		excess_.put(source_, excess_.get(source_) + 1);
 		// set distances
+		verticesCategorizedByDistances_ = new HashMap<Integer, HashSet<Vertex>>();
 		setInitialDistances();
 		activeVertices_ = new LinkedList<Vertex>();
 		addToActiveVerticesList(source_);
+		numberOfRelabelings_ = 0;
 	}
 	
 	/**
@@ -165,13 +171,87 @@ public class PushRelabelFifoAlgo {
 	 */
 	private void setInitialDistances() {
 		distances_ = new HashMap<Vertex, Integer>();
-		for (Vertex v : residualGraph_.getAllVertices()) {
-			distances_.put(v, 1);
+		updateDistanceLabel(sink_, 0);
+		globalRelabelingDistances();
+		if (distances_.size() < residualGraph_.getNumberOfVertices()) {
+			for (Vertex v : residualGraph_.getAllVertices()) {
+				if (!distances_.containsKey(v)) {
+					updateDistanceLabel(v, residualGraph_.getNumberOfVertices());
+				}
+			}
 		}
-		distances_.put(sink_, 0);
-		distances_.put(source_, 2);
-		if (2 == residualGraph_.getNumberOfVertices()) {
-			distances_.put(source_, 1); // since no other node exists with distance 1
+	}
+	
+	private void updateDistanceLabel(Vertex v, int distance) {
+		int init = distances_.containsKey(v) ? distances_.get(v) : -1;
+		if (-1 != init) {
+			verticesCategorizedByDistances_.get(init).remove(v);
+		}
+		distances_.put(v, distance);
+		if (!verticesCategorizedByDistances_.containsKey(distance)) {
+			verticesCategorizedByDistances_.put(distance, new HashSet<Vertex>());
+		}
+		verticesCategorizedByDistances_.get(distance).add(v);
+	}
+	
+	/**
+	 * Global relabeling distances.
+	 */
+	private void globalRelabelingDistances() {
+		LinkedList<Vertex> queue = new LinkedList<Vertex>();
+		queue.add(sink_);
+		HashSet<Vertex> observed = new HashSet<Vertex>();
+		int n = residualGraph_.getNumberOfVertices();
+		while (!queue.isEmpty()) {
+			Vertex v = queue.pop();
+			int dv = distances_.get(v);
+			observed.add(v);
+			for (Arc uv : v.getIngoingArcs()) {
+				Vertex u = uv.getStartVertex();
+				int du = dv + 1;
+				if (du > n) {
+					du = n;
+				}
+				if (!observed.contains(u)) {
+					boolean shouldAddToQueue = true;
+					if (distances_.containsKey(u)) {
+						if (distances_.get(u) >= n) {
+							shouldAddToQueue = false;
+						}
+					}
+					if (shouldAddToQueue) {
+						queue.add(u);
+						updateDistanceLabel(u, du);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Gap relabeling distances.
+	 */
+	private void gapRelabelingDistances() {
+		int n = residualGraph_.getNumberOfVertices();
+		int firstEmptySetIndex = 0;
+		for (int i = 1; i < n; i++) {
+			HashSet<Vertex> currentSet = verticesCategorizedByDistances_.get(i);
+			if (null == currentSet || currentSet.isEmpty()) {
+				firstEmptySetIndex = i;
+				break;
+			}
+		}
+		Vector<Vertex> notReachables = new Vector<Vertex>();
+		for (int j = firstEmptySetIndex; j < n; j++) {
+			HashSet<Vertex> currentSet = verticesCategorizedByDistances_.get(j);
+			if (null != currentSet && !currentSet.isEmpty()) {
+				for (Vertex u : currentSet) {
+					notReachables.add(u);
+				}
+			}
+		}
+		for (Vertex u : notReachables) {
+			updateDistanceLabel(u, n);
 		}
 	}
 	
@@ -209,7 +289,7 @@ public class PushRelabelFifoAlgo {
 	 */
 	private void discharge(Vertex v) {
 		if (!vertexIsActive(v)) {
-			Log.e("Non-active " + v + ". Unable to discharge!");
+			Log.w("Non-active " + v + ". Unable to discharge!");
 			return;
 		}
 		Log.p("Discharge vertex " + v.getName());
@@ -332,11 +412,18 @@ public class PushRelabelFifoAlgo {
 			}
 		}
 		if (minDistance < Integer.MAX_VALUE) {
-			distances_.put(u, minDistance + 1);
+			updateDistanceLabel(u, minDistance + 1);
 		} else {
-			distances_.put(u, residualGraph_.getNumberOfVertices());
+			updateDistanceLabel(u, residualGraph_.getNumberOfVertices());
 		}
 		Log.ps("Relabel node %s to level %d", u.getName(), distances_.get(u));
+		numberOfRelabelings_++;
+		Log.p(numberOfRelabelings_+"");
+		if (numberOfRelabelings_ >= residualGraph_.getNumberOfVertices()) {
+			globalRelabelingDistances();
+			gapRelabelingDistances();
+			numberOfRelabelings_ = 0;
+		}
 	}
 	
 	/**
