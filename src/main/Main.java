@@ -4,11 +4,11 @@ import java.util.HashMap;
 
 import model.tool.maxflow.Arc;
 import model.tool.maxflow.Graph;
+import model.tool.maxflow.GraphReader;
 import model.tool.maxflow.GraphUtil;
 import model.tool.maxflow.PushRelabelAlgo;
 import model.tool.maxflow.PushRelabelFifoAlgo;
 import model.tool.maxflow.Vertex;
-import util.GraphReader;
 import util.Log;
 import util.Timer;
 

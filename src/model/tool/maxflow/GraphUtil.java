@@ -62,11 +62,15 @@ public class GraphUtil {
 	 * @param sink the sink
 	 */
 	public static void writeInputFileForPushRelabelAlgo(String fileName, Graph graph, Vertex source, Vertex sink) {
-		String content = "# Node u, Node v, Capacity of uv\n";
-		String format = "%3s, %3s, %7.3f\n";
+		String content = "# Node u, Node v, Capacity of uv, Name of uv\n";
+		String format = "%3s, %3s, %12.5f, %s\n";
 		for (Arc a : source.getOutgoingArcs()) {
 			Vertex v = a.getEndVertex();
-			content += String.format(format, source.getName(), v.getName(), a.getCapacity());
+			if (v.equals(sink)) {
+				// avoid double print (should print this later as ingoing arc to sink)
+				continue;
+			}
+			content += String.format(format, source.getName(), v.getName(), a.getCapacity(), a.getName());
 		}
 		for (Arc a : graph.getAllArcs()) {
 			Vertex u = a.getStartVertex();
@@ -74,15 +78,11 @@ public class GraphUtil {
 			if (u.equals(source) || v.equals(sink)) {
 				continue;
 			}
-			content += String.format(format, u.getName(), v.getName(), a.getCapacity());
+			content += String.format(format, u.getName(), v.getName(), a.getCapacity(), a.getName());
 		}
 		for (Arc a : sink.getIngoingArcs()) {
 			Vertex u = a.getStartVertex();
-			if (u.equals(source)) {
-				// avoid double print (already printed before as outgoing arc from source)
-				continue;
-			}
-			content += String.format(format, u.getName(), sink.getName(), a.getCapacity());
+			content += String.format(format, u.getName(), sink.getName(), a.getCapacity(), a.getName());
 		}
 		FileOrganizer.writeFile(fileName, content);
 	}

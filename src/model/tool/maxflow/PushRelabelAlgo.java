@@ -438,7 +438,6 @@ public class PushRelabelAlgo {
 		}
 		Log.ps("Relabel node %s to level %d", u.getName(), distances_.get(u));
 		numberOfRelabelings_++;
-		Log.p(numberOfRelabelings_+"");
 		if (numberOfRelabelings_ >= residualGraph_.getNumberOfVertices()) {
 			globalRelabelingDistances();
 			gapRelabelingDistances();

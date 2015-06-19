@@ -1,11 +1,10 @@
-package util;
+package model.tool.maxflow;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
-import model.tool.maxflow.Graph;
-import model.tool.maxflow.Vertex;
+import util.Log;
 
 /**
  * The Class GraphReader.
@@ -51,15 +50,15 @@ public class GraphReader {
 					continue;
 				}
 				String[] s = line.split(",");
-				if (s.length != 3) {
-					Log.e("Unexpected line: " + line + "\nThree elements separated by two commas were expected.");
+				if (s.length != 3 && s.length != 4) {
+					Log.e("Unexpected line: " + line + "\nThree or four elements were expected.");
 					continue;
 				}
 				
 				// retrieve capacity
 				double cap = Double.parseDouble(s[2]);
-				if (cap <= 0) {
-					Log.e("Unexpected non-positive capacity found in line: " + line + "\nArc won\'t be added.");
+				if (cap < 0) {
+					Log.e("Unexpected negative capacity found in line: " + line + "\nArc won\'t be added.");
 					continue;
 				}
 				
@@ -78,7 +77,14 @@ public class GraphReader {
 				sinkName_ = v; // update sink name
 				
 				// add new arc
-				g.addArc(g.getVertex(u), g.getVertex(v), cap);
+				if (4 == s.length) {
+					String arcname = s[3].trim();
+					Arc a = new Arc(arcname, g.getVertex(u), g.getVertex(v));
+					a.setCapacity(cap);
+					g.addArc(a);
+				} else {
+					g.addArc(g.getVertex(u), g.getVertex(v), cap);
+				}
 			}
 			br.close();
 		} catch (Exception e) {
