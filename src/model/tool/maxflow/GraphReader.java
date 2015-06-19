@@ -35,6 +35,16 @@ public class GraphReader {
 	 * @return the graph
 	 */
 	public void readFile(String fileName) {
+		readFile(fileName, true);
+	}
+	
+	/**
+	 * Read file.
+	 *
+	 * @param fileName the file name
+	 * @param allowArcsWithZeroCapacity the allow arcs with zero capacity
+	 */
+	public void readFile(String fileName, boolean allowArcsWithZeroCapacity) {
 		Log.p("Read file " + fileName);
 		Graph g = new Graph(fileName);
 		sourceName_ = null;
@@ -60,6 +70,12 @@ public class GraphReader {
 				if (cap < 0) {
 					Log.e("Unexpected negative capacity found in line: " + line + "\nArc won\'t be added.");
 					continue;
+				}
+				if (!allowArcsWithZeroCapacity) {
+					if (cap == 0.0) {
+						Log.e("Unexpected zero capacity found in line: " + line + "\nArc won\'t be added.");
+						continue;
+					}
 				}
 				
 				// add vertices if needed

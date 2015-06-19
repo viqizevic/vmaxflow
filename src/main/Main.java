@@ -1,6 +1,8 @@
 package main;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Vector;
 
 import model.tool.maxflow.Arc;
 import model.tool.maxflow.Graph;
@@ -37,25 +39,25 @@ public class Main {
 		}
 		
 		GraphReader gr = new GraphReader();
-		gr.readFile(fileName);
+		gr.readFile(fileName, false);
 		Graph g = gr.getGraph();
 		Vertex s = gr.getSource();
 		Vertex t = gr.getSink();
 		Log.p(g.toString());
 		
 		String timer = Timer.startNewTimer();
-		HashMap<Arc, Double> flow = runAlgo(g, s, t, PushRelabelAlgo.class.toString());
+		HashMap<Arc, Double> flow = runAlgo(g, s, t, PushRelabelAlgo.class.toString(), fileName);
 		Timer.stopTimerAndPrintLog(timer, "Algo HL");
 		GraphUtil.writeOutputFile(output+".hl.txt", g, flow);
 		
 		String timer2 = Timer.startNewTimer();
-		flow = runAlgo(g, s, t, PushRelabelFifoAlgo.class.toString());
+		HashMap<Arc, Double> flow2 = runAlgo(g, s, t, PushRelabelFifoAlgo.class.toString(), fileName);
 		Timer.stopTimerAndPrintLog(timer2, "Algo FIFO");
 		
-		GraphUtil.writeOutputFile(output, g, flow);
+		GraphUtil.writeOutputFile(output, g, flow2);
 	}
 	
-	private static HashMap<Arc, Double> runAlgo(Graph g, Vertex s, Vertex t, String algoClass) {
+	private static HashMap<Arc, Double> runAlgo(Graph g, Vertex s, Vertex t, String algoClass, String fileName) {
 		HashMap<Arc, Double> flow = null;
 		Log.turnOffPrintLog();
 		if (algoClass.equals(PushRelabelAlgo.class.toString())) {
@@ -63,11 +65,25 @@ public class Main {
 			flow = algo.computeMaxFlow();
 			Log.turnOnPrintLog();
 			Log.ps("\nMax flow = " + algo.getMaxFlowValue());
+			Log.p(algo.getMinCutSetCloseToSource().size()+"");
+			Log.p(algo.getMinCut().size()+"");
 		} else if (algoClass.equals(PushRelabelFifoAlgo.class.toString())) {
 			PushRelabelFifoAlgo algo = new PushRelabelFifoAlgo(g, s, t);
 			flow = algo.computeMaxFlow();
 			Log.turnOnPrintLog();
 			Log.ps("\nMax flow = " + algo.getMaxFlowValue());
+			Log.p(algo.getMinCutSetCloseToSource().size()+"");
+			Log.p(algo.getMinCut().size()+"");
+			
+			GraphReader gr = new GraphReader();
+			gr.readFile(fileName, true);
+			g = gr.getGraph();
+			HashSet<Vertex> set = new HashSet<Vertex>();
+			for (Vertex v : algo.getMinCutSetCloseToSource()) {
+				set.add(g.getVertex(v.getName()));
+			}
+			Log.p(set.size()+"");
+			Log.p(Graph.getOutgoingArcs(set).size()+"");
 		}
 		return flow;
 	}
