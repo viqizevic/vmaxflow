@@ -127,22 +127,9 @@ public class PushRelabelAlgo {
 	
 	private void initialize(Graph graph, Vertex s, Vertex t) {
 		graph_ = graph;
-		residualGraph_ = new Graph(getResidualName(graph.getName()));
-		for (Vertex v : graph.getAllVertices()) {
-			Vertex u = new Vertex(v.getName());
-			u.setId(v.getId());
-			residualGraph_.addVertex(u);
-		}
+		residualGraph_ = graph.createResidualGraph(getResidualName(graph.getName()));
 		source_ = residualGraph_.getVertex(s.getName());
 		sink_ = residualGraph_.getVertex(t.getName());
-		for (Arc a : graph.getAllArcs()) {
-			Vertex u = residualGraph_.getVertex(a.getStartVertex().getName());
-			Vertex v = residualGraph_.getVertex(a.getEndVertex().getName());
-			Arc uv = new Arc(a.getName(), u, v);
-			uv.setId(a.getId());
-			uv.setCapacity(a.getCapacity());
-			residualGraph_.addArc(uv);
-		}
 		// zero preflow
 		preflow_ = new HashMap<String, Double>();
 		for (Arc a : residualGraph_.getAllArcs()) {

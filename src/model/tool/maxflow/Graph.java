@@ -385,6 +385,49 @@ public class Graph {
 	}
 	
 	/**
+	 * Creates the residual graph.
+	 *
+	 * @param residualGraphName the residual graph name
+	 * @return the graph
+	 */
+	public Graph createResidualGraph(String residualGraphName) {
+		return createResidualGraph(residualGraphName, null);
+	}
+	
+	/**
+	 * Creates the residual graph.
+	 *
+	 * @param residualGraphName the residual graph name
+	 * @param flow the flow
+	 * @return the graph
+	 */
+	public Graph createResidualGraph(String residualGraphName, HashMap<Arc, Double> flow) {
+		Graph residualGraph = new Graph(residualGraphName);
+		for (Vertex v : this.getAllVertices()) {
+			Vertex u = new Vertex(v.getName());
+			u.setId(v.getId());
+			residualGraph.addVertex(u);
+		}
+		for (Arc a : this.getAllArcs()) {
+			Vertex u = residualGraph.getVertex(a.getStartVertex().getName());
+			Vertex v = residualGraph.getVertex(a.getEndVertex().getName());
+			double cap = a.getCapacity();
+			if (null != flow) {
+				if (flow.containsKey(a.getName())) {
+					cap -= flow.get(a.getName());
+				}
+			}
+			if (cap > 0.0) {
+				Arc uv = new Arc(a.getName(), u, v);
+				uv.setId(a.getId());
+				uv.setCapacity(a.getCapacity());
+				residualGraph.addArc(uv);
+			}
+		}
+		return residualGraph;
+	}
+	
+	/**
 	 * Checks if graph is consistent.
 	 *
 	 * @return true, if graph is consistent

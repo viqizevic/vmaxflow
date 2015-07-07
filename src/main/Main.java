@@ -2,7 +2,6 @@ package main;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Vector;
 
 import model.tool.maxflow.Arc;
 import model.tool.maxflow.Graph;
