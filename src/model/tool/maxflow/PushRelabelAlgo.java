@@ -72,12 +72,14 @@ public class PushRelabelAlgo {
 	 */
 	public HashMap<Arc, Double> getFlow() {
 		HashMap<Arc, Double> flow = new HashMap<Arc, Double>();
-		for (String a : preflow_.keySet()) {
-			if (graph_.arcExists(a)) {
-				flow.put(graph_.getArc(a), preflow_.get(a));
-				if (preflow_.get(a) > 0) {
-					Log.p("Flow " + a + " " + preflow_.get(a));
-				}
+		for (Arc arc : graph_.getAllArcs()) {
+			String a = arc.getName();
+			if (!preflow_.containsKey(a)) {
+				preflow_.put(a, 0.0);
+			}
+			flow.put(arc, preflow_.get(a));
+			if (preflow_.get(a) > 0) {
+				Log.p("Flow " + a + " " + preflow_.get(a));
 			}
 		}
 		return flow;
