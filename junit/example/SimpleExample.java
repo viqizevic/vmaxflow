@@ -62,7 +62,7 @@ public class SimpleExample {
 		}
 		
 		Log.p("\nMin Cut:");
-		for (Arc arc : algo.getMinCut()) {
+		for (Arc arc : algo.getCut()) {
 			Log.p(arc.toString());
 		}
 	}

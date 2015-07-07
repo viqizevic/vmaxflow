@@ -1,7 +1,6 @@
 package main;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 import model.tool.maxflow.Arc;
 import model.tool.maxflow.Graph;
@@ -38,7 +37,7 @@ public class Main {
 		}
 		
 		GraphReader gr = new GraphReader();
-		gr.readFile(fileName, false);
+		gr.readFile(fileName);
 		Graph g = gr.getGraph();
 		Vertex s = gr.getSource();
 		Vertex t = gr.getSink();
@@ -64,25 +63,15 @@ public class Main {
 			flow = algo.computeMaxFlow();
 			Log.turnOnPrintLog();
 			Log.ps("\nMax flow = " + algo.getMaxFlowValue());
-			Log.p(algo.getMinCutSetCloseToSource().size()+"");
-			Log.p(algo.getMinCut().size()+"");
+			Log.p(algo.getCutSetCloseToSource().size()+"");
+			Log.p(algo.getCut().size()+"");
 		} else if (algoClass.equals(PushRelabelFifoAlgo.class.toString())) {
 			PushRelabelFifoAlgo algo = new PushRelabelFifoAlgo(g, s, t);
 			flow = algo.computeMaxFlow();
 			Log.turnOnPrintLog();
 			Log.ps("\nMax flow = " + algo.getMaxFlowValue());
-			Log.p(algo.getMinCutSetCloseToSource().size()+"");
-			Log.p(algo.getMinCut().size()+"");
-			
-			GraphReader gr = new GraphReader();
-			gr.readFile(fileName, true);
-			g = gr.getGraph();
-			HashSet<Vertex> set = new HashSet<Vertex>();
-			for (Vertex v : algo.getMinCutSetCloseToSource()) {
-				set.add(g.getVertex(v.getName()));
-			}
-			Log.p(set.size()+"");
-			Log.p(Graph.getOutgoingArcs(set).size()+"");
+			Log.p(algo.getCutSetCloseToSource().size()+"");
+			Log.p(algo.getCut().size()+"");
 		}
 		return flow;
 	}

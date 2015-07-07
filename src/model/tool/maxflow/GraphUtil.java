@@ -2,6 +2,9 @@ package model.tool.maxflow;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Vector;
 
 import util.FileOrganizer;
 import util.Log;
@@ -85,6 +88,137 @@ public class GraphUtil {
 			content += String.format(format, u.getName(), sink.getName(), a.getCapacity(), a.getName());
 		}
 		FileOrganizer.writeFile(fileName, content);
+	}
+	
+	/**
+	 * Gets the outgoing arcs.
+	 *
+	 * @param graph the graph
+	 * @param set the set
+	 * @return the outgoing arcs
+	 */
+	public static Collection<Arc> getOutgoingArcs(Graph graph, HashSet<String> set) {
+		Vector<Arc> cut = new Vector<Arc>();
+		for (String un : set) {
+			Vertex u = graph.getVertex(un);
+			for (Arc a : u.getOutgoingArcs()) {
+				Vertex v = a.getEndVertex();
+				if (!set.contains(v.getName())) {
+					cut.add(a);
+				}
+			}
+		}
+		return cut;
+	}
+	
+	/**
+	 * Gets the ingoing arcs.
+	 *
+	 * @param graph the graph
+	 * @param set the set
+	 * @return the ingoing arcs
+	 */
+	public static Collection<Arc> getIngoingArcs(Graph graph, HashSet<String> set) {
+		Vector<Arc> cut = new Vector<Arc>();
+		for (String un : set) {
+			Vertex v = graph.getVertex(un);
+			for (Arc a : v.getIngoingArcs()) {
+				Vertex u = a.getStartVertex();
+				if (!set.contains(u.getName())) {
+					cut.add(a);
+				}
+			}
+		}
+		return cut;
+	}
+	
+	/**
+	 * Gets the connecting arcs.
+	 *
+	 * @param graph the graph
+	 * @param sourceSet the source set
+	 * @param sinkSet the sink set
+	 * @return the connecting arcs
+	 */
+	public static Collection<Arc> getConnectingArcs(Graph graph, HashSet<String> sourceSet, HashSet<String> sinkSet) {
+		Vector<Arc> cut = new Vector<Arc>();
+		for (String un : sourceSet) {
+			Vertex u = graph.getVertex(un);
+			for (Arc a : u.getOutgoingArcs()) {
+				Vertex v = a.getEndVertex();
+				if (sinkSet.contains(v.getName())) {
+					cut.add(a);
+				}
+			}
+		}
+		return cut;
+	}
+	
+	/**
+	 * Find cut set.
+	 *
+	 * @param graph the graph
+	 * @param flow the flow
+	 * @param source the source
+	 * @param sink the sink
+	 * @return the collection
+	 */
+	public static Collection<Arc> findCutSet(Graph graph, HashMap<Arc, Double> flow, Vertex source, Vertex sink) {
+		HashSet<String> setFromSource = findCutVerticesSetClosestToSource(graph, flow, source);
+		HashSet<String> setFromSink = findCutVerticesSetClosestToSource(graph, flow, sink);
+		return getConnectingArcs(graph, setFromSource, setFromSink);
+	}
+	
+	/**
+	 * Find cut vertices set closest to source.
+	 *
+	 * @param graph the graph
+	 * @param flow the flow
+	 * @param source the source
+	 * @return the collection
+	 */
+	public static HashSet<String> findCutVerticesSetClosestToSource(Graph graph, HashMap<Arc, Double> flow, Vertex source) {
+		Graph rg = graph.createResidualGraph("RES", flow);
+		LinkedList<Vertex> queue = new LinkedList<Vertex>();
+		queue.add(rg.getVertex(source.getName()));
+		HashSet<String> observedVertices = new HashSet<String>();
+		while (!queue.isEmpty()) {
+			Vertex u = queue.pop();
+			observedVertices.add(u.getName());
+			for (Arc uv : u.getOutgoingArcs()) {
+				Vertex v = uv.getEndVertex();
+				if (!observedVertices.contains(v.getName())) {
+					queue.push(v);
+				}
+			}
+		}
+		return observedVertices;
+	}
+	
+	/**
+	 * Find cut vertices set closest to sink.
+	 *
+	 * @param graph the graph
+	 * @param flow the flow
+	 * @param sink the sink
+	 * @return the hash set
+	 */
+	public static HashSet<String> findCutVerticesSetClosestToSink(Graph graph, HashMap<Arc, Double> flow, Vertex sink) {
+		Graph rg = graph.createResidualGraph("RES", flow);
+		LinkedList<Vertex> queue = new LinkedList<Vertex>();
+		queue.add(rg.getVertex(sink.getName()));
+		HashSet<String> observedVertices = new HashSet<String>();
+		while (!queue.isEmpty()) {
+			Vertex v = queue.pop();
+			observedVertices.add(v.getName());
+			for (Arc uv : v.getIngoingArcs()) {
+				Vertex u = uv.getStartVertex();
+				if (!observedVertices.contains(u.getName())) {
+					queue.push(u);
+				}
+			}
+		}
+		return observedVertices;
 	}
 	
 }

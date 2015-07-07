@@ -49,7 +49,7 @@ public class TestPushRelabelAlgo {
 		}
 		
 		// Correct min cut value
-		assertEquals(algo.getMaxFlowValue(), GraphUtil.totalFlow(algo.getMinCut(), f), 0.001);
+		assertEquals(algo.getMaxFlowValue(), GraphUtil.totalFlow(algo.getCut(), f), 0.001);
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class TestPushRelabelAlgo {
 		assertEquals(f.get(su), f.get(vt));
 		assertEquals(k+1, (Double) f.get(su), 0.001);
 		
-		assertEquals(algo.getMaxFlowValue(), GraphUtil.totalFlow(algo.getMinCut(), f), 0.001);
+		assertEquals(algo.getMaxFlowValue(), GraphUtil.totalFlow(algo.getCut(), f), 0.001);
 	}
 
 }

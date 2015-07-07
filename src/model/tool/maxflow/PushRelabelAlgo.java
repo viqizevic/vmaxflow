@@ -86,32 +86,32 @@ public class PushRelabelAlgo {
 	}
 	
 	/**
-	 * Gets the min cut set close to source.
+	 * Gets the cut set close to source.
 	 *
-	 * @return the min cut set close to source
+	 * @return the cut set close to source
 	 */
-	public HashSet<Vertex> getMinCutSetCloseToSource() {
-		HashSet<Vertex> set = new HashSet<Vertex>();
+	public HashSet<String> getCutSetCloseToSource() {
+		HashSet<String> set = new HashSet<String>();
 		int n = graph_.getNumberOfVertices();
 		if (null == distances_) {
-			Log.w("Cannot get min cut. Please call the method to compute max flow first.");
+			Log.w("Cannot get cut. Please call the method to compute max flow first.");
 			return null;
 		}
 		for (Vertex v : distances_.keySet()) {
 			if (distances_.get(v) >= n) {
-				set.add(graph_.getVertex(v.getName()));
+				set.add(v.getName());
 			}
 		}
 		return set;
 	}
 	
 	/**
-	 * Gets the min cut.
+	 * Gets the cut.
 	 *
-	 * @return the min cut
+	 * @return the cut
 	 */
-	public Collection<Arc> getMinCut() {
-		return Graph.getOutgoingArcs(getMinCutSetCloseToSource());
+	public Collection<Arc> getCut() {
+		return GraphUtil.getOutgoingArcs(graph_, getCutSetCloseToSource());
 	}
 	
 	/**
