@@ -12,6 +12,8 @@ public class Timer {
 	
 	private static int lastUsedId_;
 	
+	private static String PREFIX_ = "timer";
+	
 	/**
 	 * Start new timer.
 	 *
@@ -23,11 +25,10 @@ public class Timer {
 			timer_ = new HashMap<String, Long>();
 		}
 		int k = lastUsedId_;
-		String id = "timer";
-		while (timer_.containsKey(id+k)) {
+		while (timer_.containsKey(PREFIX_+k)) {
 			k = k+1;
 		}
-		id = id + k;
+		String id = PREFIX_ + k;
 		long startTime = System.currentTimeMillis();
 		timer_.put(id, startTime);
 		lastUsedId_ = k;
@@ -70,6 +71,16 @@ public class Timer {
 	 * Gets the time.
 	 *
 	 * @param startTimerId the start timer id received from {@link #startNewTimer() startNewTimer} method.
+	 * @return the time in milliseconds
+	 */
+	public static long getTime(String startTimerId) {
+		return getTime(startTimerId, false, null, true);
+	}
+	
+	/**
+	 * Gets the time.
+	 *
+	 * @param startTimerId the start timer id received from {@link #startNewTimer() startNewTimer} method.
 	 * @param shouldPrintLog boolean which tells if this method should print a message over log
 	 * @param description the description of what the timer is for
 	 * @return the total time in milliseconds
@@ -101,7 +112,7 @@ public class Timer {
 			Log.p(print);
 		}
 		if (!keepTimer) {
-			timer_.remove(startTimerId);
+			removeTimer(startTimerId);
 		}
 		return t;
 	}
@@ -127,6 +138,19 @@ public class Timer {
 			print = String.format("%dms", timeInMillis);
 		}
 		return print;
+	}
+	
+	/**
+	 * Removes the timer.
+	 *
+	 * @param startTimerId the start timer id
+	 */
+	public static void removeTimer(String startTimerId) {
+		if (timer_.containsKey(startTimerId)) {
+			timer_.remove(startTimerId);
+			int k = Integer.parseInt(startTimerId.replace(PREFIX_, ""));
+			lastUsedId_ = k;
+		}
 	}
 	
 }

@@ -67,11 +67,15 @@ public class Main {
 			Log.p(algo.getCut().size()+"");
 		} else if (algoClass.equals(PushRelabelFifoAlgo.class.toString())) {
 			PushRelabelFifoAlgo algo = new PushRelabelFifoAlgo(g, s, t);
-			flow = algo.computeMaxFlow();
+			flow = algo.computeMaxFlow(125);
 			Log.turnOnPrintLog();
-			Log.ps("\nMax flow = " + algo.getMaxFlowValue());
-			Log.p(algo.getCutSetCloseToSource().size()+"");
-			Log.p(algo.getCut().size()+"");
+			if (!algo.timeLimitReached()) {
+				Log.ps("\nMax flow = " + algo.getMaxFlowValue());
+				Log.p(algo.getCutSetCloseToSource().size()+"");
+				Log.p(algo.getCut().size()+"");
+			} else {
+				Log.p("\nTime limit reached..");
+			}
 		}
 		return flow;
 	}

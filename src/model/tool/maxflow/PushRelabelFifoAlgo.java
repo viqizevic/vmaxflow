@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 import util.Log;
+import util.Timer;
 
 public class PushRelabelFifoAlgo {
 	
@@ -32,6 +33,8 @@ public class PushRelabelFifoAlgo {
 	
 	private HashMap<Integer, HashSet<Vertex>> verticesCategorizedByDistances_;
 	
+	private boolean timeLimitReached_;
+	
 	/**
 	 * Instantiates a new push relabel algo.
 	 *
@@ -49,6 +52,18 @@ public class PushRelabelFifoAlgo {
 	 * @return the hash map
 	 */
 	public HashMap<Arc, Double> computeMaxFlow() {
+		return computeMaxFlow(-1);
+	}
+	
+	/**
+	 * Compute max flow.
+	 *
+	 * @param timeLimit the time limit in milliseconds
+	 * @return the hash map
+	 */
+	public HashMap<Arc, Double> computeMaxFlow(int timeLimit) {
+		String timer = Timer.startNewTimer();
+		timeLimitReached_ = false;
 		printResidualGraph();
 		
 		while(!noMoreActiveVertexAvailable()) {
@@ -58,9 +73,26 @@ public class PushRelabelFifoAlgo {
 				addToActiveVerticesList(v);
 			}
 			Log.p("");
+			if (timeLimit >= 0) {
+				if (Timer.getTime(timer) > timeLimit) {
+					preflow_ = new HashMap<String, Double>();
+					Log.w("Time limit reached.");
+					timeLimitReached_ = true;
+					break;
+				}
+			}
 		}
 		
 		return getFlow();
+	}
+	
+	/**
+	 * Time limit reached.
+	 *
+	 * @return true, if successful
+	 */
+	public boolean timeLimitReached() {
+		return timeLimitReached_;
 	}
 	
 	/**
