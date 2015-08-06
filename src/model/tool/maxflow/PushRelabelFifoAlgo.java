@@ -78,6 +78,7 @@ public class PushRelabelFifoAlgo {
 					preflow_ = new HashMap<String, Double>();
 					Log.w("Time limit reached.");
 					timeLimitReached_ = true;
+					Timer.removeTimer(timer);
 					break;
 				}
 			}
