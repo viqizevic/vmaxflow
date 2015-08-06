@@ -42,7 +42,7 @@ Content of output file:
 The value of the flow on an arc `uv` will be placed in the third column.
 If no output file name specified, the default output file name will be used.
 
-For an example of the code usage see the file `SimpleExample.java` in `junit` folder.
+For an example of the code usage see the file `SimpleExample.java` in `example` package.
 
 ## Reference
 
