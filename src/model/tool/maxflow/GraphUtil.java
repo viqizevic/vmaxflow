@@ -165,7 +165,7 @@ public class GraphUtil {
 	 */
 	public static Collection<Arc> findCutSet(Graph graph, HashMap<Arc, Double> flow, Vertex source, Vertex sink) {
 		HashSet<String> setFromSource = findCutVerticesSetClosestToSource(graph, flow, source);
-		HashSet<String> setFromSink = findCutVerticesSetClosestToSource(graph, flow, sink);
+		HashSet<String> setFromSink = findCutVerticesSetClosestToSink(graph, flow, sink);
 		return getConnectingArcs(graph, setFromSource, setFromSink);
 	}
 	

@@ -411,14 +411,16 @@ public class Graph {
 			Vertex v = residualGraph.getVertex(a.getEndVertex().getName());
 			double cap = a.getCapacity();
 			if (null != flow) {
-				if (flow.containsKey(a.getName())) {
-					cap -= flow.get(a.getName());
+				if (flow.containsKey(a)) {
+					cap -= flow.get(a);
+				} else {
+					Log.w("Cannot find flow value for arc: " + a.getName());
 				}
 			}
 			if (cap > 0.0) {
 				Arc uv = new Arc(a.getName(), u, v);
 				uv.setId(a.getId());
-				uv.setCapacity(a.getCapacity());
+				uv.setCapacity(cap);
 				residualGraph.addArc(uv);
 			}
 		}
