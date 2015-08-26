@@ -65,6 +65,10 @@ public class SimpleExample {
 		for (Arc arc : algo.getCut()) {
 			Log.p(arc.toString());
 		}
+		
+		if (14 == algo.getMaxFlowValue()) {
+			Log.p("\nCorrect flow!");
+		}
 	}
 	
 }
